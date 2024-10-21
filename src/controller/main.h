@@ -22,7 +22,7 @@ void setup(void);
 void loop(void);
 
 // Function Prototypes
-void control_heater(bool state);
+void control_heater(int signal);
 void control_pump(bool state);
 double read_temperature(void);
 void on_temperature_control(const CoffeeMachine_TemperatureControl *message);

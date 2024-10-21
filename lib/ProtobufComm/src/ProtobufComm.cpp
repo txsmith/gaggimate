@@ -40,7 +40,7 @@ void register_remote_error_callback(remote_err_callback_t callback) {
 
 // Register a callback for PIDAutotune messages
 void register_autotune_callback(autotune_callback_t callback) {
-    autotune_callback_t = callback;
+    autotune_callback = callback;
 }
 
 // Register a callback for error handling

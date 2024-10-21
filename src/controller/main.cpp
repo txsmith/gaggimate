@@ -17,6 +17,7 @@ bool is_autotuning = false;           // Flag for whether we are in autotune mod
 void setup() {
     // Initialize UART and Protobuf communication
     protobuf_comm_init();
+    Serial.begin(115200);
 
     // Initialize PID controller
     myPID.SetMode(AUTOMATIC);
