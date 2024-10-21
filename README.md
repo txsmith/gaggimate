@@ -1,8 +1,7 @@
-# Smart Coffee Machine
+# Gaggia Control
 
-This project upgrades a Gaggia Paros espresso machine with smart controls to improve your coffee-making experience. By adding a display and custom electronics, you can monitor and control the machine more easily.
+This project upgrades a Gaggia espresso machine with smart controls to improve your coffee-making experience. By adding a display and custom electronics, you can monitor and control the machine more easily.
 
-![](docs/assets/gaggia-init.png)
 ![](docs/assets/gaggia-brew.png)
 
 ## Features
@@ -14,7 +13,7 @@ This project upgrades a Gaggia Paros espresso machine with smart controls to imp
 
 ## Hardware
 
-- **Gaggia Paros Espresso Machine**
+- **Gaggia Espresso Machine**
 - **ESP32-S3 Display**: Runs the user interface and communicates with the system.
 - **STM32F401**: Handles the machine’s low-level control.
 - **K-Type Thermocouple with MAX6675**: Reads the temperature of the boiler.
@@ -27,6 +26,6 @@ The display allows you to control the espresso machine and see live temperature 
 
 ## Installation
 
-1. Connect the ESP32-S3 Display, STM32F401, and other components to the Gaggia Paros.
+1. Connect the ESP32-S3 Display, STM32F401, and other components to the Gaggia.
 2. Upload the firmware to both microcontrollers.
 3. Enjoy your smarter coffee-making experience!
