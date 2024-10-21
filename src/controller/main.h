@@ -11,11 +11,11 @@
 #include <SPI.h>
 
 // GPIO Pin Definitions
-#define HEATER_PIN       PB0    // Assuming the heater is controlled via pin PA0
-#define PUMP_PIN         PB1    // Assuming the pump is controlled via pin PA1
-#define MAX6675_SCK_PIN  PA5    // Replace with your actual SCK pin
-#define MAX6675_CS_PIN   PA3    // Replace with your actual CS pin
-#define MAX6675_MISO_PIN PA6    // Replace with your actual MISO pin
+#define HEATER_PIN       PB0
+#define PUMP_PIN         PB1
+#define MAX6675_SCK_PIN  PA5
+#define MAX6675_CS_PIN   PA3
+#define MAX6675_MISO_PIN PA6
 
 // Function prototypes for initialization
 void setup(void);

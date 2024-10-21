@@ -2,7 +2,7 @@
 #include "main.h"
 
 // PID variables
-double setpoint = 100.0; // Desired temperature
+double setpoint = 0.0;   // Desired temperature
 double input = 0.0;      // Current temperature input from the thermocouple
 double output = 0.0;     // PID output to control heater
 PID myPID(&input, &output, &setpoint, 2.0, 5.0, 1.0, DIRECT); // PID tuning parameters
