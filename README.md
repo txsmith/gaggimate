@@ -26,6 +26,6 @@ The display allows you to control the espresso machine and see live temperature 
 
 ## Installation
 
-1. Connect the ESP32-S3 Display, STM32F401, and other components to the Gaggia.
+1. Connect the ESP32-S3 Display, ESP-WROOM32 DevKit, and other components to the Gaggia.
 2. Upload the firmware to both microcontrollers.
 3. Enjoy your smarter coffee-making experience!
