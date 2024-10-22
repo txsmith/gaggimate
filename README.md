@@ -15,7 +15,7 @@ This project upgrades a Gaggia espresso machine with smart controls to improve y
 
 - **Gaggia Espresso Machine**
 - **ESP32-S3 Display**: Runs the user interface and communicates with the system.
-- **STM32F401**: Handles the machine’s low-level control.
+- **ESP-WROOM32 DevKit**: Handles the machine’s low-level control.
 - **K-Type Thermocouple with MAX6675**: Reads the temperature of the boiler.
 - **AC SSR and Mosfet Board**: Controls the heating element (boiler).
 - **5V Relay**: Controls the pump.
