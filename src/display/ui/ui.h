@@ -59,6 +59,7 @@ extern lv_obj_t *ui_MenuScreen_grindButton1;
 void ui_event_MenuScreen_brewButton1( lv_event_t * e);
 extern lv_obj_t *ui_MenuScreen_brewButton1;
 extern lv_obj_t *ui_MenuScreen_profileButton1;
+void ui_event_MenuScreen_extrasButton1( lv_event_t * e);
 extern lv_obj_t *ui_MenuScreen_extrasButton1;
 extern lv_obj_t *ui_MenuScreen_mainLabel4;
 extern lv_obj_t *ui_MenuScreen_ImgButton2;

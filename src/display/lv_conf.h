@@ -609,7 +609,7 @@
 /*File system interfaces for common APIs */
 
 /*API for fopen, fread, etc*/
-#define LV_USE_FS_STDIO 1
+#define LV_USE_FS_STDIO 0
 #if LV_USE_FS_STDIO
     #define LV_FS_STDIO_LETTER 'A'
     #define LV_FS_STDIO_PATH "A"
@@ -782,6 +782,7 @@
 #endif /*LV_CONF_H*/
 
 #endif /*End of "Content enable"*/
+
 
 
 

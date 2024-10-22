@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "main.h"
 
 // PID variables
@@ -14,26 +13,23 @@ long last_ping_time;                // Last time a ping was received
 const double PING_TIMEOUT_SECONDS = 10.0; // Timeout for ping
 bool is_autotuning = false;           // Flag for whether we are in autotune mode
 
+BLEServerController serverController;
+
 void setup() {
-    // Initialize UART and Protobuf communication
-    protobuf_comm_init();
     Serial.begin(115200);
+    // Initialize UART and Protobuf communication
+    serverController.initServer();
 
     // Initialize PID controller
     myPID.SetMode(AUTOMATIC);
     myPID.SetOutputLimits(0, 255);  // Example output limits for heater control
 
     // Register callbacks for message processing
-    register_temp_control_callback(on_temperature_control);
-    register_pin_control_callback(on_pin_control);
-    register_ping_callback(on_ping);
-    register_error_handler(on_error);
-    register_unknown_message_handler(on_unknown_message);
-    register_autotune_callback(on_autotune);
 
     // Initialize last ping time
     last_ping_time = millis();
 
+    printf("Initializing SPI\n");
     SPI.begin();
     pinMode(MAX6675_CS_PIN, OUTPUT);
     digitalWrite(MAX6675_CS_PIN, HIGH); // Ensure CS is high
@@ -41,22 +37,25 @@ void setup() {
     // Initialize heater and pump GPIOs (set to LOW/OFF state)
     pinMode(HEATER_PIN, OUTPUT);
     pinMode(PUMP_PIN, OUTPUT);
-    control_heater(false);
+    control_heater(0);
     control_pump(false);
 
     aTune.SetOutputStep(10); // Set the output step size for autotuning
     aTune.SetControlType(1);  // Set to 1 for temperature control
     aTune.SetNoiseBand(1.0);   // Set the noise band
     aTune.SetLookbackSec(10);   // Set the lookback time
+
+    serverController.registerTempControlCallback(on_temperature_control);
+    serverController.registerPinControlCallback(on_pin_control);
+    serverController.registerPingCallback(on_ping);
+    serverController.registerAutotuneCallback(on_autotune);
+
+    printf("Initialization done\n");
 }
 
 void loop() {
     uint8_t buffer[64];
     while (1) {
-        // Read UART for incoming commands
-        if (uart_receive(buffer, sizeof(buffer)) > 0) {
-            process_received_message(buffer, sizeof(buffer));  // Process and invoke callback
-        }
 
         // Check the ping timeout for safety
         long now = millis();
@@ -64,9 +63,10 @@ void loop() {
             handle_ping_timeout();
         }
 
+        input = read_temperature();  // Read the current boiler temperature
+
         // Handle PID control if system is active and not autotuning
         if (setpoint > 0 || is_autotuning) {
-            input = read_temperature();  // Read the current boiler temperature
 
             if (is_autotuning) {
                 // Execute autotuning
@@ -84,55 +84,46 @@ void loop() {
         }
 
         // Check for thermal runaway
-        if (read_temperature() > MAX_SAFE_TEMP) {
+        if (input > MAX_SAFE_TEMP) {
             thermal_runaway_shutdown();
         }
+
+        // Update UI with temperature
+        serverController.sendTemperature(input);
+        delay(250);
     }
 }
 
-void on_temperature_control(const CoffeeMachine_TemperatureControl *message) {
+void on_temperature_control(float temperature) {
     if (is_autotuning) {
         // Ignore temperature control commands during autotuning
         return;
     }
-    setpoint = message->setpoint;
+    setpoint = temperature;
     printf("Setpoint updated to: %f\n", setpoint);
 }
 
-void on_pin_control(const CoffeeMachine_PinControl *message) {
-    switch (message->pin) {
-        case CoffeeMachine_PinControl_Pin_PUMP:
-            control_pump(message->state);
-            break;
-        default:
-            // Unknown pin
-            break;
-    }
-    printf("Pin Control: Pin %d, State %d\n", message->pin, message->state);
+void on_pin_control(bool state) {
+    control_pump(state);
+    printf("Relay Control: State %d\n", state);
 }
 
-void on_error(int error_code) {
-  	send_error(error_code);
-    printf("Error occurred: %d\n", error_code);
-}
-
-void on_unknown_message(int message_tag) {
-  	send_error(ERROR_CODE_PROTO_ERR);
-    printf("Unknown message received. Tag: %d\n", message_tag);
-}
-
-void on_ping(const CoffeeMachine_Ping *message) {
+void on_ping() {
     // Update the last ping time
     last_ping_time = millis();
     printf("Ping received, system is alive.\n");
 }
 
 void handle_ping_timeout() {
+  	if (setpoint == 0.0) {
+    	return;
+    }
     printf("Ping timeout detected. Turning off heater and pump for safety.\n");
     // Turn off the heater and pump as a safety measure
     control_heater(0);
     control_pump(false);
     setpoint = 0;
+    serverController.sendError(ERROR_CODE_TIMEOUT);
 }
 
 void thermal_runaway_shutdown() {
@@ -141,6 +132,7 @@ void thermal_runaway_shutdown() {
     control_heater(0);
     control_pump(false);
     setpoint = 0;
+    serverController.sendError(ERROR_CODE_RUNAWAY);
 }
 
 void control_heater(int out) {
@@ -151,15 +143,15 @@ void control_pump(bool state) {
     if (state) {
         // Turn on the pump
         digitalWrite(PUMP_PIN, HIGH);
-        printf("Pump ON\n");
+        printf("Setting pump relay to ON\n");
     } else {
         // Turn off the pump
         digitalWrite(PUMP_PIN, LOW);
-        printf("Pump OFF\n");
+        printf("Setting pump relay to OFF\n");
     }
 }
 
-double read_temperature(void) {
+float read_temperature(void) {
     uint16_t v; // Variable to store the temperature value
 
     // Start communication with the MAX6675
@@ -179,12 +171,12 @@ double read_temperature(void) {
 
     // Shift the value right to get the temperature
     v >>= 3; // Remove the status bits
-    double temperature = v * 0.25; // Each unit corresponds to 0.25°C
+    float temperature = v * 0.25f; // Each unit corresponds to 0.25°C
 
     return temperature; // Return the temperature
 }
 
-void on_autotune(const CoffeeMachine_PIDAutotune *message) {
+void on_autotune() {
     is_autotuning = true;
     printf("Starting PID autotune...\n");
 }

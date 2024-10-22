@@ -12,6 +12,7 @@
 
 // Callback function types for each message type
 typedef void (*temp_control_callback_t)(const CoffeeMachine_TemperatureControl *message);
+typedef void (*temp_read_callback_t)(const CoffeeMachine_TemperatureRead *message);
 typedef void (*pin_control_callback_t)(const CoffeeMachine_PinControl *message);
 typedef void (*ping_callback_t)(const CoffeeMachine_Ping *message);
 typedef void (*remote_err_callback_t)(const CoffeeMachine_Error *message);
@@ -22,10 +23,11 @@ typedef void (*error_handler_t)(int error_code);
 typedef void (*unknown_message_handler_t)(int message_tag);
 
 // Initialize communication
-void protobuf_comm_init(void);
+void protobuf_comm_init(int scl_pin, int sda_pin);
 
 // Register callback functions
 void register_temp_control_callback(temp_control_callback_t callback);
+void register_temp_read_callback(temp_read_callback_t callback);
 void register_pin_control_callback(pin_control_callback_t callback);
 void register_ping_callback(ping_callback_t callback);
 void register_autotune_callback(autotune_callback_t callback);
@@ -45,6 +47,9 @@ void send_pin_control(CoffeeMachine_PinControl_Pin pin, bool state);
 
 // Send a Ping message
 void send_ping(bool is_alive);
+
+// Send a TemperatureRead message
+void send_temperature_read(float temperature);
 
 // Send an Error message
 void send_error(int error_code);

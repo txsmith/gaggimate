@@ -5,6 +5,7 @@ uint8_t buffer[BUFFER_SIZE];
 
 // Function pointers to store the registered callbacks
 static temp_control_callback_t temp_control_callback = NULL;
+static temp_read_callback_t temp_read_callback = NULL;
 static pin_control_callback_t pin_control_callback = NULL;
 static ping_callback_t ping_callback = NULL;
 static remote_err_callback_t remote_err_callback = NULL;
@@ -14,13 +15,18 @@ static autotune_callback_t autotune_callback = NULL;
 static error_handler_t error_handler = NULL;
 static unknown_message_handler_t unknown_message_handler = NULL;
 
-void protobuf_comm_init(void) {
-    uart_init();  // Initialize UART (platform-specific)
+void protobuf_comm_init(int scl_pin, int sda_pin) {
+    uart_init();
 }
 
 // Register a callback for TemperatureControl messages
 void register_temp_control_callback(temp_control_callback_t callback) {
     temp_control_callback = callback;
+}
+
+// Register a callback for TemperatureRead messages
+void register_temp_read_callback(temp_read_callback_t callback) {
+    temp_read_callback = callback;
 }
 
 // Register a callback for PinControl messages
@@ -99,6 +105,21 @@ void send_ping(bool is_alive) {
     uart_send(buffer, stream.bytes_written);  // Send over UART
 }
 
+void send_temperature_read(float temperature) {
+    CoffeeMachine_TemperatureRead temp = CoffeeMachine_TemperatureRead_init_zero;
+    temp.temperature = temperature;
+
+    pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
+    if (!pb_encode(&stream, CoffeeMachine_TemperatureRead_fields, &temp)) {
+        if (error_handler) {
+            error_handler(ERROR_CODE_COMM_SEND);
+        }
+        return;
+    }
+
+    uart_send(buffer, stream.bytes_written);  // Send over UART
+}
+
 void send_error(int error_code) {
     CoffeeMachine_Error error = CoffeeMachine_Error_init_zero;
     error.error_code = error_code;
@@ -125,7 +146,12 @@ void process_received_message(uint8_t *buffer, size_t buffer_size) {
                 if (temp_control_callback) {
                     temp_control_callback(&cmd.cmd.temp_control);
                 }
-                break;
+            break;
+            case CoffeeMachine_Command_temp_read_tag:
+                if (temp_read_callback) {
+                    temp_read_callback(&cmd.cmd.temp_read);
+                }
+            break;
             case CoffeeMachine_Command_pin_control_tag:
                 if (pin_control_callback) {
                     pin_control_callback(&cmd.cmd.pin_control);

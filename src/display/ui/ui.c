@@ -43,6 +43,7 @@ lv_obj_t *ui_MenuScreen_grindButton1;
 void ui_event_MenuScreen_brewButton1( lv_event_t * e);
 lv_obj_t *ui_MenuScreen_brewButton1;
 lv_obj_t *ui_MenuScreen_profileButton1;
+void ui_event_MenuScreen_extrasButton1( lv_event_t * e);
 lv_obj_t *ui_MenuScreen_extrasButton1;
 lv_obj_t *ui_MenuScreen_mainLabel4;
 lv_obj_t *ui_MenuScreen_ImgButton2;
@@ -174,7 +175,13 @@ lv_indev_wait_release(lv_indev_get_act());
 void ui_event_MenuScreen_brewButton1( lv_event_t * e) {
     lv_event_code_t event_code = lv_event_get_code(e);lv_obj_t * target = lv_event_get_target(e);
 if ( event_code == LV_EVENT_CLICKED) {
-      _ui_screen_change( &ui_StatusScreen, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_StatusScreen_screen_init);
+      _ui_screen_change( &ui_BrewScreen, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_BrewScreen_screen_init);
+}
+}
+void ui_event_MenuScreen_extrasButton1( lv_event_t * e) {
+    lv_event_code_t event_code = lv_event_get_code(e);lv_obj_t * target = lv_event_get_target(e);
+if ( event_code == LV_EVENT_CLICKED) {
+      _ui_screen_change( &ui_SteamScreen, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_SteamScreen_screen_init);
 }
 }
 void ui_event_StatusScreen( lv_event_t * e) {

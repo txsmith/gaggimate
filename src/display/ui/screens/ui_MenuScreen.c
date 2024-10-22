@@ -134,6 +134,7 @@ lv_obj_set_style_img_recolor(ui_MenuScreen_ImgButton2, lv_color_hex(0xFAFAFA), L
 lv_obj_set_style_img_recolor_opa(ui_MenuScreen_ImgButton2, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
 
 lv_obj_add_event_cb(ui_MenuScreen_brewButton1, ui_event_MenuScreen_brewButton1, LV_EVENT_ALL, NULL);
+lv_obj_add_event_cb(ui_MenuScreen_extrasButton1, ui_event_MenuScreen_extrasButton1, LV_EVENT_ALL, NULL);
 lv_obj_add_event_cb(ui_MenuScreen, ui_event_MenuScreen, LV_EVENT_ALL, NULL);
 
 }
