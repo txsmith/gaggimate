@@ -20,7 +20,7 @@
       "mcu": "esp32s3",
       "variant": "esp32s3"
     },
-    "connectivity": ["wifi"],
+    "connectivity": ["wifi", "bluetooth"],
     "debug": {
       "default_tool": "esp-builtin",
       "onboard_tools": ["esp-builtin"],

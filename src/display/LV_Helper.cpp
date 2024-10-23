@@ -6,7 +6,6 @@
  * @date      2024-01-22
  *
  */
-#include <Arduino.h>
 #include "LV_Helper.h"
 
 #if LV_VERSION_CHECK(9,0,0)

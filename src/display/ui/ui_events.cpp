@@ -4,6 +4,16 @@
 // Project name: Gaggiuino
 
 #include "ui.h"
+#include "../main.h"
+
+extern int targetBrewTemp;
+extern int targetSteamTemp;
+extern int targetWaterTemp;
+extern int mode;
+extern void setBrewTemp(int temp);
+extern void setSteamTemp(int temp);
+extern void setTargetWaterTemp(int temp);
+extern void setMode(int mode);
 
 void onBrewCancel(lv_event_t * e)
 {
@@ -17,12 +27,12 @@ void onBrewStart(lv_event_t * e)
 
 void onBrewTempLower(lv_event_t * e)
 {
-	// Your code here
+  setBrewTemp(targetBrewTemp - 1);
 }
 
 void onBrewTempRaise(lv_event_t * e)
 {
-	// Your code here
+  setBrewTemp(targetBrewTemp + 1);
 }
 
 void onBrewTimeLower(lv_event_t * e)
@@ -42,10 +52,35 @@ void onSteamToggle(lv_event_t * e)
 
 void onSteamTempLower(lv_event_t * e)
 {
-	// Your code here
+  setSteamTemp(targetSteamTemp - 1);
 }
 
 void onSteamTempRaise(lv_event_t * e)
 {
+  setSteamTemp(targetSteamTemp + 1);
+}
+
+void onBrewScreen(lv_event_t * e)
+{
+  setMode(MODE_BREW);
+}
+
+void onWaterScreen(lv_event_t * e)
+{
+  setMode(MODE_WATER);
+}
+
+void onSteamScreen(lv_event_t * e)
+{
+  setMode(MODE_STEAM);
+}
+
+void onWaterToggle(lv_event_t * e)
+{
 	// Your code here
+}
+
+void onWakeup(lv_event_t * e)
+{
+  setMode(MODE_BREW);
 }

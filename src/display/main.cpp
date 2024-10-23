@@ -1,37 +1,83 @@
+#include "main.h"
 #include "LilyGo_RGBPanel.h"
 #include "LV_Helper.h"
 #include "ui/ui.h"
-#include "BLEClientController.h"
-
-#define SDA_PIN 8
-#define SCL_PIN 48
+#include "NimBLEClientController.h"
 
 LilyGo_RGBPanel panel;
 hw_timer_t *timer = NULL;
 
 extern lv_obj_t *ui_BrewScreen_tempGauge;
-extern lv_obj_t *ui_BrewScreen_tempTarget;
 extern lv_obj_t *ui_StatusScreen_tempGauge;
-extern lv_obj_t *ui_StatusScreen_tempTarget;
 extern lv_obj_t *ui_MenuScreen_tempGauge;
-extern lv_obj_t *ui_MenuScreen_tempTarget;
 extern lv_obj_t *ui_SteamScreen_tempGauge;
+
+extern lv_obj_t *ui_BrewScreen_tempTarget;
+extern lv_obj_t *ui_StatusScreen_tempTarget;
+extern lv_obj_t *ui_MenuScreen_tempTarget;
 extern lv_obj_t *ui_SteamScreen_tempTarget;
 
-int setTemp = 90;
+extern lv_obj_t *ui_BrewScreen_tempText;
+extern lv_obj_t *ui_StatusScreen_tempText;
+extern lv_obj_t *ui_MenuScreen_tempText;
+extern lv_obj_t *ui_SteamScreen_tempText;
+
+extern lv_obj_t *ui_StatusScreen_targetTemp;
+extern lv_obj_t *ui_BrewScreen_targetTemp;
+extern lv_obj_t *ui_SteamScreen_targetTemp;
+extern lv_obj_t *ui_WaterScreen_targetTemp;
+
+int mode = MODE_BREW;
+int targetBrewTemp = 90;
+int targetSteamTemp = 145;
+int targetWaterTemp = 80;
 int currentTemp = 0;
+unsigned long lastPing = 0;
 
-BLEClientController clientController;
+NimBLEClientController clientController;
 
-void IRAM_ATTR sendPingInterrupt() {
-  clientController.sendPing();
+int getTargetTemp() {
+  if (mode == MODE_BREW) return targetBrewTemp;
+  if (mode == MODE_STEAM) return targetSteamTemp;
+  if (mode == MODE_WATER) return targetWaterTemp;
+  return 0;
 }
 
 void updateUiTargetTemp() {
+  int setTemp = getTargetTemp();
   lv_arc_set_value(ui_BrewScreen_tempTarget, setTemp);
   lv_arc_set_value(ui_StatusScreen_tempTarget, setTemp);
   lv_arc_set_value(ui_MenuScreen_tempTarget, setTemp);
   lv_arc_set_value(ui_SteamScreen_tempTarget, setTemp);
+
+  lv_label_set_text_fmt(ui_StatusScreen_targetTemp, "%d°C", targetBrewTemp);
+  lv_label_set_text_fmt(ui_BrewScreen_targetTemp, "%d°C", targetBrewTemp);
+  lv_label_set_text_fmt(ui_SteamScreen_targetTemp, "%d°C", targetSteamTemp);
+  lv_label_set_text_fmt(ui_WaterScreen_targetTemp, "%d°C", targetWaterTemp);
+}
+
+void setMode(int newMode) {
+  mode = newMode;
+  updateUiTargetTemp();
+  clientController.sendTemperatureControl(getTargetTemp());
+}
+
+void setTargetBrewTemp(int temp) {
+  targetBrewTemp = temp;
+  updateUiTargetTemp();
+  clientController.sendTemperatureControl(getTargetTemp());
+}
+
+void setTargetSteamTemp(int temp) {
+  targetSteamTemp = temp;
+  updateUiTargetTemp();
+  clientController.sendTemperatureControl(getTargetTemp());
+}
+
+void setTargetWaterTemp(int temp) {
+  targetWaterTemp = temp;
+  updateUiTargetTemp();
+  clientController.sendTemperatureControl(getTargetTemp());
 }
 
 void updateUiCurrentTemp() {
@@ -39,6 +85,11 @@ void updateUiCurrentTemp() {
   lv_arc_set_value(ui_StatusScreen_tempGauge, currentTemp);
   lv_arc_set_value(ui_MenuScreen_tempGauge, currentTemp);
   lv_arc_set_value(ui_SteamScreen_tempGauge, currentTemp);
+
+  lv_label_set_text_fmt(ui_BrewScreen_tempText, "%d°C", currentTemp);
+  lv_label_set_text_fmt(ui_StatusScreen_tempText, "%d°C", currentTemp);
+  lv_label_set_text_fmt(ui_MenuScreen_tempText, "%d°C", currentTemp);
+  lv_label_set_text_fmt(ui_SteamScreen_tempText, "%d°C", currentTemp);
 }
 
 void onTempRead(float temperature) {
@@ -62,15 +113,12 @@ void setup() {
 
   clientController.initClient();
 
-  timer = timerBegin(0, 80, true); // Timer 0, clock divisor 80
-  timerAttachInterrupt(timer, &sendPingInterrupt, true); // Attach the interrupt handling function
-  timerAlarmWrite(timer, 1000000, true); // Interrupt every 1 second
-  timerAlarmEnable(timer); // Enable the alarm
-
   updateUiCurrentTemp();
   updateUiTargetTemp();
 
   clientController.registerTempReadCallback(onTempRead);
+
+  lastPing = millis();
 }
 
 void loop() {
@@ -78,5 +126,9 @@ void loop() {
   delay(2);
   if (clientController.isReadyForConnection()) {
     clientController.connectToServer();
+  }
+  if (millis() - lastPing > PING_INTERVAL) {
+    lastPing = millis();
+    clientController.sendPing();
   }
 }

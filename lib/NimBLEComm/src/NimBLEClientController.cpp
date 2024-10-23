@@ -1,0 +1,176 @@
+// BLEClientController.cpp
+
+#include "NimBLEClientController.h"
+#include "esp_log.h"
+
+#define MAX_CONNECT_RETRIES 3
+#define BLE_SCAN_DURATION_SECONDS 10
+
+NimBLEClientController::NimBLEClientController() :
+    tempControlChar(nullptr),
+    pumpControlChar(nullptr),
+    valveControlChar(nullptr),
+    tempReadChar(nullptr),
+    pingChar(nullptr),
+    errorChar(nullptr),
+    autotuneChar(nullptr),
+    serverDevice(nullptr),
+    readyForConnection(false),
+    remoteErrorCallback(nullptr),
+    tempReadCallback(nullptr),
+    client(nullptr) {}
+
+void NimBLEClientController::initClient() {
+    NimBLEDevice::init("GPBLC");
+    NimBLEDevice::setPower(ESP_PWR_LVL_P9);  // Set to maximum power
+    NimBLEDevice::setMTU(128);
+    client = NimBLEDevice::createClient();
+    if (client == nullptr) Serial.println("Failed to create BLE client");
+
+    // Scan for BLE Server
+    scan();
+}
+
+void NimBLEClientController::scan() {
+    NimBLEScan* pBLEScan = NimBLEDevice::getScan();
+    pBLEScan->setAdvertisedDeviceCallbacks(this);  // Use this class as the callback handler
+    pBLEScan->setActiveScan(true);
+    pBLEScan->start(BLE_SCAN_DURATION_SECONDS);
+}
+
+void NimBLEClientController::registerTempReadCallback(temp_read_callback_t callback) {
+    tempReadCallback = callback;
+}
+
+void NimBLEClientController::registerRemoteErrorCallback(remote_err_callback_t callback) {
+    remoteErrorCallback = callback;
+}
+
+bool NimBLEClientController::connectToServer() {
+    Serial.println("Connecting to advertised device");
+
+    unsigned int tries = 0;
+    while (!client->isConnected()) {
+        if (!client->connect(NimBLEAddress(serverDevice->getAddress()))) {
+            Serial.println("Failed connecting to BLE server. Retrying...");
+        }
+
+        tries++;
+
+        if (tries >= MAX_CONNECT_RETRIES) {
+            Serial.println("Connection timeout! Unable to connect to BLE server.");
+            scan();
+            return false;  // Exit the connection attempt if timed out
+        }
+
+        delay(500);  // Add a small delay to avoid busy-waiting
+    }
+
+    Serial.println("Successfully connected to BLE server");
+
+    // Obtain the remote service we wish to connect to
+    NimBLERemoteService* pRemoteService = client->getService(NimBLEUUID(SERVICE_UUID));
+    if (pRemoteService == nullptr) {
+        Serial.println("Error getting remote service");
+        return false;
+    }
+
+    // Obtain the remote write characteristics
+    tempControlChar = pRemoteService->getCharacteristic(NimBLEUUID(TEMP_CONTROL_CHAR_UUID));
+    pumpControlChar = pRemoteService->getCharacteristic(NimBLEUUID(PUMP_CONTROL_CHAR_UUID));
+    valveControlChar = pRemoteService->getCharacteristic(NimBLEUUID(VALVE_CONTROL_CHAR_UUID));
+    autotuneChar = pRemoteService->getCharacteristic(NimBLEUUID(AUTOTUNE_CHAR_UUID));
+    pingChar = pRemoteService->getCharacteristic(NimBLEUUID(PING_CHAR_UUID));
+
+    // Obtain the remote notify characteristic and subscribe to it
+    tempReadChar = pRemoteService->getCharacteristic(NimBLEUUID(TEMP_READ_CHAR_UUID));
+    if (tempReadChar->canNotify()) {
+        tempReadChar->subscribe(true, std::bind(&NimBLEClientController::notifyCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+    }
+
+    errorChar = pRemoteService->getCharacteristic(NimBLEUUID(ERROR_CHAR_UUID));
+    if (errorChar->canNotify()) {
+        errorChar->subscribe(true, std::bind(&NimBLEClientController::notifyCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+    }
+
+    delay(500);
+
+    readyForConnection = false;
+    return true;
+}
+
+void NimBLEClientController::sendTemperatureControl(float setpoint) {
+    if (tempControlChar != nullptr && client->isConnected()) {
+        char tempStr[8];
+        snprintf(tempStr, sizeof(tempStr), "%.2f", setpoint);
+        tempControlChar->writeValue(tempStr);
+    }
+}
+
+void NimBLEClientController::sendPumpControl(bool pinState) {
+    if (pumpControlChar != nullptr && client->isConnected()) {
+        pumpControlChar->writeValue(pinState ? "1" : "0");
+    }
+}
+
+void NimBLEClientController::sendValveControl(bool pinState) {
+    if (valveControlChar != nullptr && client->isConnected()) {
+        valveControlChar->writeValue(pinState ? "1" : "0");
+    }
+}
+
+void NimBLEClientController::sendPing() {
+    if (pingChar != nullptr && client->isConnected()) {
+        pingChar->writeValue("1");
+    }
+}
+
+void NimBLEClientController::sendAutotune() {
+    if (autotuneChar != nullptr && client->isConnected()) {
+        autotuneChar->writeValue("1");
+    }
+}
+
+bool NimBLEClientController::isReadyForConnection() {
+    return readyForConnection;
+}
+
+// BLEAdvertisedDeviceCallbacks override
+void NimBLEClientController::onResult(NimBLEAdvertisedDevice* advertisedDevice) {
+    Serial.printf("Advertised Device found: %s \n", advertisedDevice->toString().c_str());
+
+    // Check if this is the device we're looking for
+    if (advertisedDevice->haveServiceUUID()) {
+        Serial.println("Found BLE service. Checking for ID...");
+        if (advertisedDevice->isAdvertisingService(NimBLEUUID(SERVICE_UUID))) {
+            Serial.println("Found target BLE device. Connecting...");
+            NimBLEDevice::getScan()->stop();  // Stop scanning once we find the correct device
+            serverDevice = advertisedDevice;
+            readyForConnection = true;
+        }
+    }
+}
+
+void NimBLEClientController::onDisconnect(NimBLEClient* pServer) {
+    Serial.println("Disconnected from server, trying to reconnect...");
+    scan();
+}
+
+// Notification callback
+void NimBLEClientController::notifyCallback(NimBLERemoteCharacteristic* pRemoteCharacteristic, uint8_t* pData, size_t length, bool isNotify) {
+    // Process notifications from the server (e.g., temperature data)
+    if (pRemoteCharacteristic->getUUID().equals(NimBLEUUID(TEMP_READ_CHAR_UUID))) {
+        float temperature = atof((char*)pData);
+        Serial.printf("Temperature read: %.2f\n", temperature);
+        if (tempReadCallback != nullptr) {
+            tempReadCallback(temperature);
+        }
+    }
+    if (pRemoteCharacteristic->getUUID().equals(NimBLEUUID(ERROR_CHAR_UUID))) {
+        int errorCode = atoi((char*)pData);
+        Serial.printf("Error read: %d\n", errorCode);
+        if (remoteErrorCallback != nullptr) {
+            remoteErrorCallback(errorCode);
+        }
+    }
+}

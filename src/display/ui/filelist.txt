@@ -7,6 +7,8 @@ screens/ui_StatusScreen.c
 screens/ui_GrindScreen.c
 screens/ui_BrewScreen.c
 screens/ui_SteamScreen.c
+screens/ui_WaterScreen.c
+screens/ui_StandbyScreen.c
 ui_theme_manager.cpp
 ui_themes.cpp
 ui.c
@@ -17,7 +19,7 @@ images/ui_img_1640786209.c
 images/ui_img_1895594966.c
 images/ui_img_1857452635.c
 images/ui_img_753040508.c
-images/ui_img_1759772909.c
+images/ui_img_2100879889.c
 images/ui_img_2056842146.c
 images/ui_img_980971367.c
 images/ui_img_646127855.c

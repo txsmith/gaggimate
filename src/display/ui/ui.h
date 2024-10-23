@@ -42,7 +42,7 @@ extern lv_obj_t *ui_ProfileScreen;
 extern lv_obj_t *ui_ProfileScreen_tempGauge;
 extern lv_obj_t *ui_ProfileScreen_tempTarget;
 extern lv_obj_t *ui_ProfileScreen_ImgButton1;
-extern lv_obj_t *ui_ProfileScreen_tempText1;
+extern lv_obj_t *ui_ProfileScreen_tempText;
 extern lv_obj_t *ui_ProfileScreen_contentPanel;
 extern lv_obj_t *ui_ProfileScreen_mainLabel;
 void ui_event_ProfileScreen_profileChoices( lv_event_t * e);
@@ -53,11 +53,12 @@ void ui_event_MenuScreen( lv_event_t * e);
 extern lv_obj_t *ui_MenuScreen;
 extern lv_obj_t *ui_MenuScreen_tempGauge;
 extern lv_obj_t *ui_MenuScreen_tempTarget;
-extern lv_obj_t *ui_MenuScreen_tempText2;
+extern lv_obj_t *ui_MenuScreen_tempText;
 extern lv_obj_t *ui_MenuScreen_contentPanel1;
 extern lv_obj_t *ui_MenuScreen_grindButton1;
 void ui_event_MenuScreen_brewButton1( lv_event_t * e);
 extern lv_obj_t *ui_MenuScreen_brewButton1;
+void ui_event_MenuScreen_profileButton1( lv_event_t * e);
 extern lv_obj_t *ui_MenuScreen_profileButton1;
 void ui_event_MenuScreen_extrasButton1( lv_event_t * e);
 extern lv_obj_t *ui_MenuScreen_extrasButton1;
@@ -70,7 +71,7 @@ extern lv_obj_t *ui_StatusScreen;
 extern lv_obj_t *ui_StatusScreen_tempGauge;
 extern lv_obj_t *ui_StatusScreen_tempTarget;
 extern lv_obj_t *ui_StatusScreen_ImgButton3;
-extern lv_obj_t *ui_StatusScreen_tempText5;
+extern lv_obj_t *ui_StatusScreen_tempText;
 extern lv_obj_t *ui_StatusScreen_contentPanel2;
 extern lv_obj_t *ui_StatusScreen_mainLabel1;
 extern lv_obj_t *ui_StatusScreen_progressBar;
@@ -104,7 +105,7 @@ extern lv_obj_t *ui_BrewScreen;
 extern lv_obj_t *ui_BrewScreen_tempGauge;
 extern lv_obj_t *ui_BrewScreen_tempTarget;
 extern lv_obj_t *ui_BrewScreen_ImgButton5;
-extern lv_obj_t *ui_BrewScreen_tempText3;
+extern lv_obj_t *ui_BrewScreen_tempText;
 extern lv_obj_t *ui_BrewScreen_contentPanel4;
 extern lv_obj_t *ui_BrewScreen_mainLabel3;
 extern lv_obj_t *ui_BrewScreen_targetTempHelp1;
@@ -128,7 +129,7 @@ extern lv_obj_t *ui_SteamScreen;
 extern lv_obj_t *ui_SteamScreen_tempGauge;
 extern lv_obj_t *ui_SteamScreen_tempTarget;
 extern lv_obj_t *ui_SteamScreen_ImgButton6;
-extern lv_obj_t *ui_SteamScreen_tempText4;
+extern lv_obj_t *ui_SteamScreen_tempText;
 extern lv_obj_t *ui_SteamScreen_contentPanel5;
 extern lv_obj_t *ui_SteamScreen_mainLabel5;
 extern lv_obj_t *ui_SteamScreen_targetTempHelp2;
@@ -139,13 +140,37 @@ extern lv_obj_t *ui_SteamScreen_downTempButton;
 void ui_event_SteamScreen_upTempButton( lv_event_t * e);
 extern lv_obj_t *ui_SteamScreen_upTempButton;
 extern lv_obj_t *ui_SteamScreen_targetTemp;
+// SCREEN: ui_WaterScreen
+void ui_WaterScreen_screen_init(void);
+void ui_event_WaterScreen( lv_event_t * e);
+extern lv_obj_t *ui_WaterScreen;
+extern lv_obj_t *ui_WaterScreen_tempGauge;
+extern lv_obj_t *ui_WaterScreen_tempTarget;
+extern lv_obj_t *ui_WaterScreen_ImgButton7;
+extern lv_obj_t *ui_WaterScreen_tempText;
+extern lv_obj_t *ui_WaterScreen_contentPanel6;
+extern lv_obj_t *ui_WaterScreen_mainLabel6;
+extern lv_obj_t *ui_WaterScreen_targetTempHelp3;
+void ui_event_WaterScreen_goButton( lv_event_t * e);
+extern lv_obj_t *ui_WaterScreen_goButton;
+void ui_event_WaterScreen_downTempButton( lv_event_t * e);
+extern lv_obj_t *ui_WaterScreen_downTempButton;
+void ui_event_WaterScreen_upTempButton( lv_event_t * e);
+extern lv_obj_t *ui_WaterScreen_upTempButton;
+extern lv_obj_t *ui_WaterScreen_targetTemp;
+// SCREEN: ui_StandbyScreen
+void ui_StandbyScreen_screen_init(void);
+void ui_event_StandbyScreen( lv_event_t * e);
+extern lv_obj_t *ui_StandbyScreen;
+extern lv_obj_t *ui_StandbyScreen_Image1;
+extern lv_obj_t *ui_StandbyScreen_text1;
 extern lv_obj_t *ui____initial_actions0;
 
 LV_IMG_DECLARE( ui_img_1640786209);   // assets/gaggia-logo.png
 LV_IMG_DECLARE( ui_img_1895594966);   // assets/chevron-up-solid (1).png
 LV_IMG_DECLARE( ui_img_1857452635);   // assets/coffee-beans.png
 LV_IMG_DECLARE( ui_img_753040508);   // assets/coffee-cup.png
-LV_IMG_DECLARE( ui_img_1759772909);   // assets/list (1).png
+LV_IMG_DECLARE( ui_img_2100879889);   // assets/water-80.png
 LV_IMG_DECLARE( ui_img_2056842146);   // assets/steam-80.png
 LV_IMG_DECLARE( ui_img_980971367);   // assets/chevron-down-solid.png
 LV_IMG_DECLARE( ui_img_646127855);   // assets/pause-solid.png

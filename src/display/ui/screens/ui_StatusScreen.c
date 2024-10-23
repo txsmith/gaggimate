@@ -16,7 +16,7 @@ ui_StatusScreen_tempGauge = lv_arc_create(ui_StatusScreen);
 lv_obj_set_width( ui_StatusScreen_tempGauge, 440);
 lv_obj_set_height( ui_StatusScreen_tempGauge, 440);
 lv_obj_set_align( ui_StatusScreen_tempGauge, LV_ALIGN_CENTER );
-lv_arc_set_range(ui_StatusScreen_tempGauge, 0,145);
+lv_arc_set_range(ui_StatusScreen_tempGauge, 0,150);
 lv_arc_set_value(ui_StatusScreen_tempGauge, 92);
 lv_arc_set_bg_angles(ui_StatusScreen_tempGauge,110,70);
 lv_obj_set_style_arc_width(ui_StatusScreen_tempGauge, 8, LV_PART_MAIN| LV_STATE_DEFAULT);
@@ -32,8 +32,8 @@ ui_StatusScreen_tempTarget = lv_arc_create(ui_StatusScreen);
 lv_obj_set_width( ui_StatusScreen_tempTarget, 440);
 lv_obj_set_height( ui_StatusScreen_tempTarget, 440);
 lv_obj_set_align( ui_StatusScreen_tempTarget, LV_ALIGN_CENTER );
-lv_arc_set_range(ui_StatusScreen_tempTarget, 0,145);
-lv_arc_set_value(ui_StatusScreen_tempTarget, 110);
+lv_arc_set_range(ui_StatusScreen_tempTarget, 0,150);
+lv_arc_set_value(ui_StatusScreen_tempTarget, 90);
 lv_arc_set_bg_angles(ui_StatusScreen_tempTarget,110,70);
 lv_obj_set_style_bg_color(ui_StatusScreen_tempTarget, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT );
 lv_obj_set_style_bg_opa(ui_StatusScreen_tempTarget, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
@@ -60,16 +60,16 @@ lv_obj_set_align( ui_StatusScreen_ImgButton3, LV_ALIGN_CENTER );
 lv_obj_set_style_img_recolor(ui_StatusScreen_ImgButton3, lv_color_hex(0xFAFAFA), LV_PART_MAIN| LV_STATE_DEFAULT);
 lv_obj_set_style_img_recolor_opa(ui_StatusScreen_ImgButton3, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
 
-ui_StatusScreen_tempText5 = lv_label_create(ui_StatusScreen);
-lv_obj_set_width( ui_StatusScreen_tempText5, LV_SIZE_CONTENT);  /// 1
-lv_obj_set_height( ui_StatusScreen_tempText5, LV_SIZE_CONTENT);   /// 1
-lv_obj_set_x( ui_StatusScreen_tempText5, 0 );
-lv_obj_set_y( ui_StatusScreen_tempText5, -196 );
-lv_obj_set_align( ui_StatusScreen_tempText5, LV_ALIGN_CENTER );
-lv_label_set_text(ui_StatusScreen_tempText5,"92°C");
-lv_obj_set_style_text_color(ui_StatusScreen_tempText5, lv_color_hex(0xFAFAFA), LV_PART_MAIN | LV_STATE_DEFAULT );
-lv_obj_set_style_text_opa(ui_StatusScreen_tempText5, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
-lv_obj_set_style_text_font(ui_StatusScreen_tempText5, &lv_font_montserrat_18, LV_PART_MAIN| LV_STATE_DEFAULT);
+ui_StatusScreen_tempText = lv_label_create(ui_StatusScreen);
+lv_obj_set_width( ui_StatusScreen_tempText, LV_SIZE_CONTENT);  /// 1
+lv_obj_set_height( ui_StatusScreen_tempText, LV_SIZE_CONTENT);   /// 1
+lv_obj_set_x( ui_StatusScreen_tempText, 0 );
+lv_obj_set_y( ui_StatusScreen_tempText, -196 );
+lv_obj_set_align( ui_StatusScreen_tempText, LV_ALIGN_CENTER );
+lv_label_set_text(ui_StatusScreen_tempText,"92°C");
+lv_obj_set_style_text_color(ui_StatusScreen_tempText, lv_color_hex(0xFAFAFA), LV_PART_MAIN | LV_STATE_DEFAULT );
+lv_obj_set_style_text_opa(ui_StatusScreen_tempText, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
+lv_obj_set_style_text_font(ui_StatusScreen_tempText, &lv_font_montserrat_18, LV_PART_MAIN| LV_STATE_DEFAULT);
 
 ui_StatusScreen_contentPanel2 = lv_obj_create(ui_StatusScreen);
 lv_obj_set_width( ui_StatusScreen_contentPanel2, 360);

@@ -13,7 +13,7 @@ long last_ping_time;                // Last time a ping was received
 const double PING_TIMEOUT_SECONDS = 10.0; // Timeout for ping
 bool is_autotuning = false;           // Flag for whether we are in autotune mode
 
-BLEServerController serverController;
+NimBLEServerController serverController;
 
 void setup() {
     Serial.begin(115200);
@@ -46,7 +46,7 @@ void setup() {
     aTune.SetLookbackSec(10);   // Set the lookback time
 
     serverController.registerTempControlCallback(on_temperature_control);
-    serverController.registerPinControlCallback(on_pin_control);
+    serverController.registerPumpControlCallback(on_pin_control);
     serverController.registerPingCallback(on_ping);
     serverController.registerAutotuneCallback(on_autotune);
 
@@ -103,9 +103,12 @@ void on_temperature_control(float temperature) {
     printf("Setpoint updated to: %f\n", setpoint);
 }
 
-void on_pin_control(bool state) {
+void on_pump_control(bool state) {
     control_pump(state);
-    printf("Relay Control: State %d\n", state);
+}
+
+void on_valve_control(bool state) {
+    control_valve(state);
 }
 
 void on_ping() {
@@ -148,6 +151,18 @@ void control_pump(bool state) {
         // Turn off the pump
         digitalWrite(PUMP_PIN, LOW);
         printf("Setting pump relay to OFF\n");
+    }
+}
+
+void control_valve(bool state) {
+    if (state) {
+        // Turn on the valve
+        digitalWrite(VALVE_PIN, HIGH);
+        printf("Setting valve relay to ON\n");
+    } else {
+        // Turn off the valve
+        digitalWrite(VALVE_PIN, LOW);
+        printf("Setting valve relay to OFF\n");
     }
 }
 

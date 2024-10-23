@@ -16,7 +16,7 @@ ui_SteamScreen_tempGauge = lv_arc_create(ui_SteamScreen);
 lv_obj_set_width( ui_SteamScreen_tempGauge, 440);
 lv_obj_set_height( ui_SteamScreen_tempGauge, 440);
 lv_obj_set_align( ui_SteamScreen_tempGauge, LV_ALIGN_CENTER );
-lv_arc_set_range(ui_SteamScreen_tempGauge, 0,145);
+lv_arc_set_range(ui_SteamScreen_tempGauge, 0,150);
 lv_arc_set_value(ui_SteamScreen_tempGauge, 92);
 lv_arc_set_bg_angles(ui_SteamScreen_tempGauge,110,70);
 lv_obj_set_style_arc_width(ui_SteamScreen_tempGauge, 8, LV_PART_MAIN| LV_STATE_DEFAULT);
@@ -32,8 +32,8 @@ ui_SteamScreen_tempTarget = lv_arc_create(ui_SteamScreen);
 lv_obj_set_width( ui_SteamScreen_tempTarget, 440);
 lv_obj_set_height( ui_SteamScreen_tempTarget, 440);
 lv_obj_set_align( ui_SteamScreen_tempTarget, LV_ALIGN_CENTER );
-lv_arc_set_range(ui_SteamScreen_tempTarget, 0,145);
-lv_arc_set_value(ui_SteamScreen_tempTarget, 110);
+lv_arc_set_range(ui_SteamScreen_tempTarget, 0,150);
+lv_arc_set_value(ui_SteamScreen_tempTarget, 145);
 lv_arc_set_bg_angles(ui_SteamScreen_tempTarget,110,70);
 lv_obj_set_style_bg_color(ui_SteamScreen_tempTarget, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT );
 lv_obj_set_style_bg_opa(ui_SteamScreen_tempTarget, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
@@ -60,16 +60,16 @@ lv_obj_set_align( ui_SteamScreen_ImgButton6, LV_ALIGN_CENTER );
 lv_obj_set_style_img_recolor(ui_SteamScreen_ImgButton6, lv_color_hex(0xFAFAFA), LV_PART_MAIN| LV_STATE_DEFAULT);
 lv_obj_set_style_img_recolor_opa(ui_SteamScreen_ImgButton6, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
 
-ui_SteamScreen_tempText4 = lv_label_create(ui_SteamScreen);
-lv_obj_set_width( ui_SteamScreen_tempText4, LV_SIZE_CONTENT);  /// 1
-lv_obj_set_height( ui_SteamScreen_tempText4, LV_SIZE_CONTENT);   /// 1
-lv_obj_set_x( ui_SteamScreen_tempText4, 0 );
-lv_obj_set_y( ui_SteamScreen_tempText4, -196 );
-lv_obj_set_align( ui_SteamScreen_tempText4, LV_ALIGN_CENTER );
-lv_label_set_text(ui_SteamScreen_tempText4,"92°C");
-lv_obj_set_style_text_color(ui_SteamScreen_tempText4, lv_color_hex(0xFAFAFA), LV_PART_MAIN | LV_STATE_DEFAULT );
-lv_obj_set_style_text_opa(ui_SteamScreen_tempText4, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
-lv_obj_set_style_text_font(ui_SteamScreen_tempText4, &lv_font_montserrat_18, LV_PART_MAIN| LV_STATE_DEFAULT);
+ui_SteamScreen_tempText = lv_label_create(ui_SteamScreen);
+lv_obj_set_width( ui_SteamScreen_tempText, LV_SIZE_CONTENT);  /// 1
+lv_obj_set_height( ui_SteamScreen_tempText, LV_SIZE_CONTENT);   /// 1
+lv_obj_set_x( ui_SteamScreen_tempText, 0 );
+lv_obj_set_y( ui_SteamScreen_tempText, -196 );
+lv_obj_set_align( ui_SteamScreen_tempText, LV_ALIGN_CENTER );
+lv_label_set_text(ui_SteamScreen_tempText,"92°C");
+lv_obj_set_style_text_color(ui_SteamScreen_tempText, lv_color_hex(0xFAFAFA), LV_PART_MAIN | LV_STATE_DEFAULT );
+lv_obj_set_style_text_opa(ui_SteamScreen_tempText, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
+lv_obj_set_style_text_font(ui_SteamScreen_tempText, &lv_font_montserrat_18, LV_PART_MAIN| LV_STATE_DEFAULT);
 
 ui_SteamScreen_contentPanel5 = lv_obj_create(ui_SteamScreen);
 lv_obj_set_width( ui_SteamScreen_contentPanel5, 360);
@@ -138,7 +138,7 @@ ui_SteamScreen_targetTemp = lv_label_create(ui_SteamScreen_contentPanel5);
 lv_obj_set_width( ui_SteamScreen_targetTemp, 60);
 lv_obj_set_height( ui_SteamScreen_targetTemp, 20);
 lv_obj_set_align( ui_SteamScreen_targetTemp, LV_ALIGN_CENTER );
-lv_label_set_text(ui_SteamScreen_targetTemp,"93°C");
+lv_label_set_text(ui_SteamScreen_targetTemp,"145°C");
 ui_object_set_themeable_style_property(ui_SteamScreen_targetTemp, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_TEXT_COLOR, _ui_theme_color_NiceWhite);
 ui_object_set_themeable_style_property(ui_SteamScreen_targetTemp, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_TEXT_OPA, _ui_theme_alpha_NiceWhite);
 lv_obj_set_style_text_align(ui_SteamScreen_targetTemp, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN| LV_STATE_DEFAULT);

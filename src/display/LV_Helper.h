@@ -7,6 +7,7 @@
  *
  */
 #pragma once
+#include <Arduino.h>
 #include <lvgl.h>
 #include "LilyGo_Display.h"
 
@@ -14,5 +15,3 @@
 void beginLvglHelper(LilyGo_Display &board, bool debug = false);
 String lvgl_helper_get_fs_filename(String filename);
 const char *lvgl_helper_get_fs_filename(const char *filename);
-
-

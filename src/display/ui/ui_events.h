@@ -10,6 +10,9 @@
 extern "C" {
 #endif
 
+void onBrewScreen(lv_event_t * e);
+void onWaterScreen(lv_event_t * e);
+void onSteamScreen(lv_event_t * e);
 void onBrewCancel(lv_event_t * e);
 void onBrewStart(lv_event_t * e);
 void onBrewTempLower(lv_event_t * e);
@@ -19,6 +22,8 @@ void onBrewTimeRaise(lv_event_t * e);
 void onSteamToggle(lv_event_t * e);
 void onSteamTempLower(lv_event_t * e);
 void onSteamTempRaise(lv_event_t * e);
+void onWaterToggle(lv_event_t * e);
+void onWakeup(lv_event_t * e);
 
 #ifdef __cplusplus
 } /*extern "C"*/
