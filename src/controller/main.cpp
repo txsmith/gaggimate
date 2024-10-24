@@ -37,8 +37,10 @@ void setup() {
     // Initialize heater and pump GPIOs (set to LOW/OFF state)
     pinMode(HEATER_PIN, OUTPUT);
     pinMode(PUMP_PIN, OUTPUT);
+    pinMode(VALVE_PIN, OUTPUT);
     control_heater(0);
     control_pump(false);
+    control_valve(false);
 
     aTune.SetOutputStep(10); // Set the output step size for autotuning
     aTune.SetControlType(1);  // Set to 1 for temperature control
@@ -46,7 +48,8 @@ void setup() {
     aTune.SetLookbackSec(10);   // Set the lookback time
 
     serverController.registerTempControlCallback(on_temperature_control);
-    serverController.registerPumpControlCallback(on_pin_control);
+    serverController.registerPumpControlCallback(on_pump_control);
+    serverController.registerValveControlCallback(on_valve_control);
     serverController.registerPingCallback(on_ping);
     serverController.registerAutotuneCallback(on_autotune);
 
@@ -139,7 +142,9 @@ void thermal_runaway_shutdown() {
 }
 
 void control_heater(int out) {
+    analogWriteFrequency(PWM_FREQUENCY);
   	analogWrite(HEATER_PIN, out);
+    printf("Sending heater output: %d\n", out);
 }
 
 void control_pump(bool state) {

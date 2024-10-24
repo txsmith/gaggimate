@@ -11,15 +11,15 @@
 #include "NimBLEServerController.h"
 
 // GPIO Pin Definitions
-#define HEATER_PIN       1
-#define PUMP_PIN         3
-#define VALVE_PIN        21
+#define HEATER_PIN       SDA
+#define PUMP_PIN         SCL
+#define VALVE_PIN        MOSI
 #define MAX6675_SCK_PIN  SCK
 #define MAX6675_CS_PIN   SS
 #define MAX6675_MISO_PIN MISO
 
-#define SCL_PIN 22
-#define SDA_PIN 21
+#define PWM_FREQUENCY 20
+
 #define I2C_DEV_ADDR 0x55
 
 // Function prototypes for initialization
@@ -32,7 +32,8 @@ void control_pump(bool state);
 void control_valve(bool state);
 float read_temperature(void);
 void on_temperature_control(float temperature);
-void on_pin_control(bool state);
+void on_pump_control(bool state);
+void on_valve_control(bool state);
 void on_ping();
 void on_autotune();
 void on_error(int error_code);
