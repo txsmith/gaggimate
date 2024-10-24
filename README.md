@@ -7,18 +7,19 @@ This project upgrades a Gaggia espresso machine with smart controls to improve y
 ## Features
 
 - **Temperature Control**: Monitor the boiler temperature to ensure optimal brewing conditions.
-- **Pump Control**: Start and stop the pump with the press of a button.
+- **Brew timer**: Set a target duration and run the brewing for the specific time.
+- **Steam and Hot Water mode**: Control the pump and valve to run the respective task.
 - **Safety Features**: Automatic shutoff if the system becomes unresponsive or overheats.
 - **User Interface**: Simple, intuitive display to control and monitor the machine.
 
 ## Hardware
 
 - **Gaggia Espresso Machine**
-- **ESP32-S3 Display**: Runs the user interface and communicates with the system.
+- **LilyGo T-RGB 2.1" Display**: Runs the user interface and communicates with the system.
 - **ESP-WROOM32 DevKit**: Handles the machine’s low-level control.
-- **K-Type Thermocouple with MAX6675**: Reads the temperature of the boiler.
-- **AC SSR and Mosfet Board**: Controls the heating element (boiler).
-- **5V Relay**: Controls the pump.
+- **K-Type M4 Thermocouple with MAX6675**: Reads the temperature of the boiler.
+- **AC SSR**: Controls the heating element (boiler).
+- **2-Channel 5V Relay**: Controls the pump and valve.
 
 ## How It Works
 
