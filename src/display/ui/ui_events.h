@@ -23,6 +23,8 @@ void onSteamToggle(lv_event_t * e);
 void onSteamTempLower(lv_event_t * e);
 void onSteamTempRaise(lv_event_t * e);
 void onWaterToggle(lv_event_t * e);
+void onWaterTempLower(lv_event_t * e);
+void onWaterTempRaise(lv_event_t * e);
 void onWakeup(lv_event_t * e);
 
 #ifdef __cplusplus

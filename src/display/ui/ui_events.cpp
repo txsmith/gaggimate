@@ -3,84 +3,104 @@
 // LVGL version: 8.3.11
 // Project name: Gaggiuino
 
+#include <Arduino.h>
 #include "ui.h"
 #include "../main.h"
 
 extern int targetBrewTemp;
 extern int targetSteamTemp;
 extern int targetWaterTemp;
+extern int targetDuration;
 extern int mode;
-extern void setBrewTemp(int temp);
-extern void setSteamTemp(int temp);
-extern void setTargetWaterTemp(int temp);
-extern void setMode(int mode);
 
 void onBrewCancel(lv_event_t * e)
 {
-	// Your code here
+  deactivate();
 }
 
 void onBrewStart(lv_event_t * e)
 {
-	// Your code here
+  activate(millis() + targetDuration);
 }
 
 void onBrewTempLower(lv_event_t * e)
 {
-  setBrewTemp(targetBrewTemp - 1);
+  setTargetBrewTemp(targetBrewTemp - 1);
 }
 
 void onBrewTempRaise(lv_event_t * e)
 {
-  setBrewTemp(targetBrewTemp + 1);
+  setTargetBrewTemp(targetBrewTemp + 1);
 }
 
 void onBrewTimeLower(lv_event_t * e)
 {
-	// Your code here
+  int newDuration = targetDuration - 1000;
+  if (newDuration < BREW_MIN_DURATION_MS) {
+    newDuration = BREW_MIN_DURATION_MS;
+  }
+  setTargetDuration(newDuration);
 }
 
 void onBrewTimeRaise(lv_event_t * e)
 {
-	// Your code here
+  int newDuration = targetDuration + 1000;
+  if (newDuration > BREW_MAX_DURATION_MS) {
+    newDuration = BREW_MIN_DURATION_MS;
+  }
+  setTargetDuration(newDuration);
 }
 
 void onSteamToggle(lv_event_t * e)
 {
-	// Your code here
+  isActive() ? deactivate() : activate(millis() + STEAM_SAFETY_DURATION_MS);
 }
 
 void onSteamTempLower(lv_event_t * e)
 {
-  setSteamTemp(targetSteamTemp - 1);
+  setTargetSteamTemp(targetSteamTemp - 1);
 }
 
 void onSteamTempRaise(lv_event_t * e)
 {
-  setSteamTemp(targetSteamTemp + 1);
+  setTargetSteamTemp(targetSteamTemp + 1);
 }
 
 void onBrewScreen(lv_event_t * e)
 {
   setMode(MODE_BREW);
+  deactivate();
 }
 
 void onWaterScreen(lv_event_t * e)
 {
   setMode(MODE_WATER);
+  deactivate();
 }
 
 void onSteamScreen(lv_event_t * e)
 {
   setMode(MODE_STEAM);
+  deactivate();
 }
 
 void onWaterToggle(lv_event_t * e)
 {
-	// Your code here
+  isActive() ? deactivate() : activate(millis() + HOT_WATER_SAFETY_DURATION_MS);
 }
 
 void onWakeup(lv_event_t * e)
 {
   setMode(MODE_BREW);
+  deactivate();
+}
+
+void onWaterTempLower(lv_event_t * e)
+{
+  setTargetWaterTemp(targetWaterTemp - 1);
+}
+
+void onWaterTempRaise(lv_event_t * e)
+{
+  setTargetWaterTemp(targetWaterTemp + 1);
 }
