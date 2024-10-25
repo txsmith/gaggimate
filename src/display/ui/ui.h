@@ -167,7 +167,7 @@ extern lv_obj_t *ui_StandbyScreen_text1;
 extern lv_obj_t *ui_StandbyScreen_time;
 extern lv_obj_t *ui____initial_actions0;
 
-LV_IMG_DECLARE( ui_img_1640786209);   // assets/gaggia-logo.png
+LV_IMG_DECLARE( ui_img_1595653719);   // assets/GAGGIMATE (1).png
 LV_IMG_DECLARE( ui_img_1895594966);   // assets/chevron-up-solid (1).png
 LV_IMG_DECLARE( ui_img_1857452635);   // assets/coffee-beans.png
 LV_IMG_DECLARE( ui_img_753040508);   // assets/coffee-cup.png

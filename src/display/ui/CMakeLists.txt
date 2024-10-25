@@ -15,7 +15,7 @@ SET(SOURCES components/ui_comp_piebutton.c
     components/ui_comp_hook.c
     ui_helpers.c
     ui_events.cpp
-    images/ui_img_1640786209.c
+    images/ui_img_1595653719.c
     images/ui_img_1895594966.c
     images/ui_img_1857452635.c
     images/ui_img_753040508.c
