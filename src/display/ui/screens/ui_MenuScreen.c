@@ -16,6 +16,7 @@ ui_MenuScreen_tempGauge = lv_arc_create(ui_MenuScreen);
 lv_obj_set_width( ui_MenuScreen_tempGauge, 440);
 lv_obj_set_height( ui_MenuScreen_tempGauge, 440);
 lv_obj_set_align( ui_MenuScreen_tempGauge, LV_ALIGN_CENTER );
+lv_obj_add_state( ui_MenuScreen_tempGauge, LV_STATE_DISABLED );     /// States
 lv_arc_set_range(ui_MenuScreen_tempGauge, 0,150);
 lv_arc_set_value(ui_MenuScreen_tempGauge, 92);
 lv_arc_set_bg_angles(ui_MenuScreen_tempGauge,110,70);
@@ -32,6 +33,7 @@ ui_MenuScreen_tempTarget = lv_arc_create(ui_MenuScreen);
 lv_obj_set_width( ui_MenuScreen_tempTarget, 440);
 lv_obj_set_height( ui_MenuScreen_tempTarget, 440);
 lv_obj_set_align( ui_MenuScreen_tempTarget, LV_ALIGN_CENTER );
+lv_obj_add_state( ui_MenuScreen_tempTarget, LV_STATE_DISABLED );     /// States
 lv_arc_set_range(ui_MenuScreen_tempTarget, 0,150);
 lv_arc_set_value(ui_MenuScreen_tempTarget, 90);
 lv_arc_set_bg_angles(ui_MenuScreen_tempTarget,110,70);
@@ -123,19 +125,19 @@ ui_object_set_themeable_style_property(ui_MenuScreen_mainLabel4, LV_PART_MAIN| L
 ui_object_set_themeable_style_property(ui_MenuScreen_mainLabel4, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_TEXT_OPA, _ui_theme_alpha_NiceWhite);
 lv_obj_set_style_text_font(ui_MenuScreen_mainLabel4, &lv_font_montserrat_18, LV_PART_MAIN| LV_STATE_DEFAULT);
 
-ui_MenuScreen_ImgButton2 = lv_imgbtn_create(ui_MenuScreen);
-lv_imgbtn_set_src(ui_MenuScreen_ImgButton2, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_standby_png, NULL);
-lv_obj_set_width( ui_MenuScreen_ImgButton2, 40);
-lv_obj_set_height( ui_MenuScreen_ImgButton2, 40);
-lv_obj_set_x( ui_MenuScreen_ImgButton2, 0 );
-lv_obj_set_y( ui_MenuScreen_ImgButton2, 210 );
-lv_obj_set_align( ui_MenuScreen_ImgButton2, LV_ALIGN_CENTER );
-lv_obj_set_style_img_recolor(ui_MenuScreen_ImgButton2, lv_color_hex(0xFAFAFA), LV_PART_MAIN| LV_STATE_DEFAULT);
-lv_obj_set_style_img_recolor_opa(ui_MenuScreen_ImgButton2, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
+ui_MenuScreen_standbyButton = lv_imgbtn_create(ui_MenuScreen);
+lv_imgbtn_set_src(ui_MenuScreen_standbyButton, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_standby_png, NULL);
+lv_obj_set_width( ui_MenuScreen_standbyButton, 40);
+lv_obj_set_height( ui_MenuScreen_standbyButton, 40);
+lv_obj_set_x( ui_MenuScreen_standbyButton, 0 );
+lv_obj_set_y( ui_MenuScreen_standbyButton, 210 );
+lv_obj_set_align( ui_MenuScreen_standbyButton, LV_ALIGN_CENTER );
+lv_obj_set_style_img_recolor(ui_MenuScreen_standbyButton, lv_color_hex(0xFAFAFA), LV_PART_MAIN| LV_STATE_DEFAULT);
+lv_obj_set_style_img_recolor_opa(ui_MenuScreen_standbyButton, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
 
 lv_obj_add_event_cb(ui_MenuScreen_brewButton1, ui_event_MenuScreen_brewButton1, LV_EVENT_ALL, NULL);
 lv_obj_add_event_cb(ui_MenuScreen_profileButton1, ui_event_MenuScreen_profileButton1, LV_EVENT_ALL, NULL);
 lv_obj_add_event_cb(ui_MenuScreen_extrasButton1, ui_event_MenuScreen_extrasButton1, LV_EVENT_ALL, NULL);
-lv_obj_add_event_cb(ui_MenuScreen_ImgButton2, ui_event_MenuScreen_ImgButton2, LV_EVENT_ALL, NULL);
+lv_obj_add_event_cb(ui_MenuScreen_standbyButton, ui_event_MenuScreen_standbyButton, LV_EVENT_ALL, NULL);
 
 }

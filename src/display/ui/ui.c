@@ -46,8 +46,8 @@ lv_obj_t *ui_MenuScreen_profileButton1;
 void ui_event_MenuScreen_extrasButton1( lv_event_t * e);
 lv_obj_t *ui_MenuScreen_extrasButton1;
 lv_obj_t *ui_MenuScreen_mainLabel4;
-void ui_event_MenuScreen_ImgButton2( lv_event_t * e);
-lv_obj_t *ui_MenuScreen_ImgButton2;
+void ui_event_MenuScreen_standbyButton( lv_event_t * e);
+lv_obj_t *ui_MenuScreen_standbyButton;
 
 
 // SCREEN: ui_StatusScreen
@@ -217,7 +217,7 @@ if ( event_code == LV_EVENT_CLICKED) {
       onSteamScreen( e );
 }
 }
-void ui_event_MenuScreen_ImgButton2( lv_event_t * e) {
+void ui_event_MenuScreen_standbyButton( lv_event_t * e) {
     lv_event_code_t event_code = lv_event_get_code(e);lv_obj_t * target = lv_event_get_target(e);
 if ( event_code == LV_EVENT_CLICKED) {
       onStandby( e );

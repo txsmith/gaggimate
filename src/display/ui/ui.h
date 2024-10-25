@@ -62,8 +62,8 @@ extern lv_obj_t *ui_MenuScreen_profileButton1;
 void ui_event_MenuScreen_extrasButton1( lv_event_t * e);
 extern lv_obj_t *ui_MenuScreen_extrasButton1;
 extern lv_obj_t *ui_MenuScreen_mainLabel4;
-void ui_event_MenuScreen_ImgButton2( lv_event_t * e);
-extern lv_obj_t *ui_MenuScreen_ImgButton2;
+void ui_event_MenuScreen_standbyButton( lv_event_t * e);
+extern lv_obj_t *ui_MenuScreen_standbyButton;
 // SCREEN: ui_StatusScreen
 void ui_StatusScreen_screen_init(void);
 void ui_event_StatusScreen( lv_event_t * e);
