@@ -21,9 +21,10 @@ SET(SOURCES components/ui_comp_piebutton.c
     images/ui_img_753040508.c
     images/ui_img_2100879889.c
     images/ui_img_2056842146.c
-    images/ui_img_980971367.c
+    images/ui_img_standby_png.c
     images/ui_img_646127855.c
     images/ui_img_1138440778.c
-    images/ui_img_2106667244.c)
+    images/ui_img_2106667244.c
+    images/ui_img_980971367.c)
 
 add_library(ui ${SOURCES})

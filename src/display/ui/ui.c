@@ -33,7 +33,6 @@ lv_obj_t *ui_ProfileScreen_profileChoices;
 
 // SCREEN: ui_MenuScreen
 void ui_MenuScreen_screen_init(void);
-void ui_event_MenuScreen( lv_event_t * e);
 lv_obj_t *ui_MenuScreen;
 lv_obj_t *ui_MenuScreen_tempGauge;
 lv_obj_t *ui_MenuScreen_tempTarget;
@@ -47,6 +46,7 @@ lv_obj_t *ui_MenuScreen_profileButton1;
 void ui_event_MenuScreen_extrasButton1( lv_event_t * e);
 lv_obj_t *ui_MenuScreen_extrasButton1;
 lv_obj_t *ui_MenuScreen_mainLabel4;
+void ui_event_MenuScreen_ImgButton2( lv_event_t * e);
 lv_obj_t *ui_MenuScreen_ImgButton2;
 
 
@@ -196,13 +196,6 @@ if ( event_code == LV_EVENT_VALUE_CHANGED) {
       _ui_screen_change( &ui_StatusScreen, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_StatusScreen_screen_init);
 }
 }
-void ui_event_MenuScreen( lv_event_t * e) {
-    lv_event_code_t event_code = lv_event_get_code(e);lv_obj_t * target = lv_event_get_target(e);
-if ( event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_BOTTOM  ) {
-lv_indev_wait_release(lv_indev_get_act());
-      _ui_screen_change( &ui_BrewScreen, LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 500, 0, &ui_BrewScreen_screen_init);
-}
-}
 void ui_event_MenuScreen_brewButton1( lv_event_t * e) {
     lv_event_code_t event_code = lv_event_get_code(e);lv_obj_t * target = lv_event_get_target(e);
 if ( event_code == LV_EVENT_CLICKED) {
@@ -222,6 +215,12 @@ void ui_event_MenuScreen_extrasButton1( lv_event_t * e) {
 if ( event_code == LV_EVENT_CLICKED) {
       _ui_screen_change( &ui_SteamScreen, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_SteamScreen_screen_init);
       onSteamScreen( e );
+}
+}
+void ui_event_MenuScreen_ImgButton2( lv_event_t * e) {
+    lv_event_code_t event_code = lv_event_get_code(e);lv_obj_t * target = lv_event_get_target(e);
+if ( event_code == LV_EVENT_CLICKED) {
+      onStandby( e );
 }
 }
 void ui_event_StatusScreen( lv_event_t * e) {

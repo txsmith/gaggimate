@@ -14,6 +14,7 @@ void onLoadStarted(lv_event_t * e);
 void onBrewScreen(lv_event_t * e);
 void onWaterScreen(lv_event_t * e);
 void onSteamScreen(lv_event_t * e);
+void onStandby(lv_event_t * e);
 void onBrewCancel(lv_event_t * e);
 void onBrewStart(lv_event_t * e);
 void onBrewTempLower(lv_event_t * e);

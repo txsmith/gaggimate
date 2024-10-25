@@ -35,5 +35,6 @@ void setTargetWaterTemp(int temp);
 void setTargetDuration(int duration);
 void setMode(int mode);
 void updateLastAction();
+void activateStandby();
 
 #endif //MAIN_H

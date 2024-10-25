@@ -49,7 +49,6 @@ void ui_event_ProfileScreen_profileChoices( lv_event_t * e);
 extern lv_obj_t *ui_ProfileScreen_profileChoices;
 // SCREEN: ui_MenuScreen
 void ui_MenuScreen_screen_init(void);
-void ui_event_MenuScreen( lv_event_t * e);
 extern lv_obj_t *ui_MenuScreen;
 extern lv_obj_t *ui_MenuScreen_tempGauge;
 extern lv_obj_t *ui_MenuScreen_tempTarget;
@@ -63,6 +62,7 @@ extern lv_obj_t *ui_MenuScreen_profileButton1;
 void ui_event_MenuScreen_extrasButton1( lv_event_t * e);
 extern lv_obj_t *ui_MenuScreen_extrasButton1;
 extern lv_obj_t *ui_MenuScreen_mainLabel4;
+void ui_event_MenuScreen_ImgButton2( lv_event_t * e);
 extern lv_obj_t *ui_MenuScreen_ImgButton2;
 // SCREEN: ui_StatusScreen
 void ui_StatusScreen_screen_init(void);
@@ -173,10 +173,11 @@ LV_IMG_DECLARE( ui_img_1857452635);   // assets/coffee-beans.png
 LV_IMG_DECLARE( ui_img_753040508);   // assets/coffee-cup.png
 LV_IMG_DECLARE( ui_img_2100879889);   // assets/water-80.png
 LV_IMG_DECLARE( ui_img_2056842146);   // assets/steam-80.png
-LV_IMG_DECLARE( ui_img_980971367);   // assets/chevron-down-solid.png
+LV_IMG_DECLARE( ui_img_standby_png);   // assets/standby.png
 LV_IMG_DECLARE( ui_img_646127855);   // assets/pause-solid.png
 LV_IMG_DECLARE( ui_img_1138440778);   // assets/weight-hanging-solid.png
 LV_IMG_DECLARE( ui_img_2106667244);   // assets/play-40.png
+LV_IMG_DECLARE( ui_img_980971367);   // assets/chevron-down-solid.png
 
 
 

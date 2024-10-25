@@ -124,7 +124,7 @@ ui_object_set_themeable_style_property(ui_MenuScreen_mainLabel4, LV_PART_MAIN| L
 lv_obj_set_style_text_font(ui_MenuScreen_mainLabel4, &lv_font_montserrat_18, LV_PART_MAIN| LV_STATE_DEFAULT);
 
 ui_MenuScreen_ImgButton2 = lv_imgbtn_create(ui_MenuScreen);
-lv_imgbtn_set_src(ui_MenuScreen_ImgButton2, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_980971367, NULL);
+lv_imgbtn_set_src(ui_MenuScreen_ImgButton2, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_standby_png, NULL);
 lv_obj_set_width( ui_MenuScreen_ImgButton2, 40);
 lv_obj_set_height( ui_MenuScreen_ImgButton2, 40);
 lv_obj_set_x( ui_MenuScreen_ImgButton2, 0 );
@@ -136,6 +136,6 @@ lv_obj_set_style_img_recolor_opa(ui_MenuScreen_ImgButton2, 255, LV_PART_MAIN| LV
 lv_obj_add_event_cb(ui_MenuScreen_brewButton1, ui_event_MenuScreen_brewButton1, LV_EVENT_ALL, NULL);
 lv_obj_add_event_cb(ui_MenuScreen_profileButton1, ui_event_MenuScreen_profileButton1, LV_EVENT_ALL, NULL);
 lv_obj_add_event_cb(ui_MenuScreen_extrasButton1, ui_event_MenuScreen_extrasButton1, LV_EVENT_ALL, NULL);
-lv_obj_add_event_cb(ui_MenuScreen, ui_event_MenuScreen, LV_EVENT_ALL, NULL);
+lv_obj_add_event_cb(ui_MenuScreen_ImgButton2, ui_event_MenuScreen_ImgButton2, LV_EVENT_ALL, NULL);
 
 }
