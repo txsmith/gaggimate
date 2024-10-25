@@ -8,6 +8,7 @@
 #include <WiFiClient.h>
 #include <WebServer.h>
 #include <ElegantOTA.h>
+#include "time.h"
 
 
 const char* SSID = WIFI_SSID;
@@ -28,6 +29,8 @@ unsigned long activeUntil = 0;
 unsigned long lastPing = 0;
 unsigned long lastProgress = 0;
 unsigned long lastAction = 0;
+bool loaded = false;
+bool updating = false;
 
 NimBLEClientController clientController;
 
@@ -172,6 +175,13 @@ void onTempRead(float temperature) {
   updateUiCurrentTemp();
 }
 
+void onOTAUPdate() {
+  deactivate();
+  setMode(MODE_STANDBY);
+  _ui_screen_change( &ui_StandbyScreen, LV_SCR_LOAD_ANIM_NONE, 500, 0, &ui_StandbyScreen_screen_init);
+  updating = true;
+}
+
 void setupWifi() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(SSID, PASS);
@@ -188,10 +198,13 @@ void setupWifi() {
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
+  configTzTime(TIMEZONE, NTP_SERVER);
+
   server.on("/", []() {
     server.send(200, "text/plain", "Hi! This is ElegantOTA Demo.");
   });
   ElegantOTA.begin(&server);
+  ElegantOTA.onStart(onOTAUPdate);
   server.begin();
   Serial.print("OTA server started");
 }
@@ -199,17 +212,20 @@ void setupWifi() {
 void setup() {
   Serial.begin(115200);
 
+  mode = BREW_ON_START ? MODE_BREW : MODE_STANDBY;
+
   // Initialize T-RGB, if the initialization fails, false will be returned.
   if (!panel.begin()) {
     while (1) {
       Serial.println("Error, failed to initialize T-RGB"); delay(1000);
     }
   }
-
   beginLvglHelper(panel);
   panel.setBrightness(16);
   ui_init();
+}
 
+void setupAfterScreen() {
   clientController.initClient();
 
   updateUiCurrentTemp();
@@ -223,12 +239,22 @@ void setup() {
 }
 
 void loop() {
-  lv_timer_handler();
+  if (!updating) {
+    lv_timer_handler();
+  }
   server.handleClient();
   ElegantOTA.loop();
   delay(2);
   if (clientController.isReadyForConnection()) {
     clientController.connectToServer();
+    if (!loaded) {
+      loaded = true;
+      if (BREW_ON_START) {
+        _ui_screen_change( &ui_BrewScreen, LV_SCR_LOAD_ANIM_NONE, 500, 0, &ui_BrewScreen_screen_init);
+      } else {
+        _ui_screen_change( &ui_StandbyScreen, LV_SCR_LOAD_ANIM_NONE, 500, 0, &ui_StandbyScreen_screen_init);
+      }
+    }
   }
   unsigned long now = millis();
   if (now - lastPing > PING_INTERVAL) {
@@ -237,16 +263,25 @@ void loop() {
     clientController.sendTemperatureControl(getTargetTemp());
     updateRelay();
   }
-  if (now - lastProgress > PROGRESS_INTERVAL && mode == MODE_BREW) {
+  if (now - lastProgress > PROGRESS_INTERVAL) {
+    if (mode == MODE_BREW) {
+      updateBrewProgress();
+    } else if (mode == MODE_STANDBY) {
+      struct tm timeinfo;
+      if(getLocalTime(&timeinfo)){
+        char time[6];
+        strftime(time, 6, "%H:%M", &timeinfo);
+        lv_label_set_text(ui_StandbyScreen_time, time);
+      }
+    }
     lastProgress = millis();
-    updateBrewProgress();
   }
   if (activeUntil != 0 && now > activeUntil) {
     deactivate();
   }
   if (mode != MODE_STANDBY && now > lastAction + STANDBY_TIMEOUT_MS) {
-    deactivate();
     setMode(MODE_STANDBY);
+    deactivate();
     _ui_screen_change( &ui_StandbyScreen, LV_SCR_LOAD_ANIM_NONE, 500, 0, &ui_StandbyScreen_screen_init);
   }
 }

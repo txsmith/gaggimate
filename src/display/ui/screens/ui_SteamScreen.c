@@ -9,8 +9,8 @@ void ui_SteamScreen_screen_init(void)
 {
 ui_SteamScreen = lv_obj_create(NULL);
 lv_obj_clear_flag( ui_SteamScreen, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
-lv_obj_set_style_bg_color(ui_SteamScreen, lv_color_hex(0x131313), LV_PART_MAIN | LV_STATE_DEFAULT );
-lv_obj_set_style_bg_opa(ui_SteamScreen, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
+ui_object_set_themeable_style_property(ui_SteamScreen, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_BG_COLOR, _ui_theme_color_Dark);
+ui_object_set_themeable_style_property(ui_SteamScreen, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_BG_OPA, _ui_theme_alpha_Dark);
 
 ui_SteamScreen_tempGauge = lv_arc_create(ui_SteamScreen);
 lv_obj_set_width( ui_SteamScreen_tempGauge, 440);
@@ -111,8 +111,8 @@ lv_obj_set_height( ui_SteamScreen_goButton, 40);
 lv_obj_set_x( ui_SteamScreen_goButton, 0 );
 lv_obj_set_y( ui_SteamScreen_goButton, 110 );
 lv_obj_set_align( ui_SteamScreen_goButton, LV_ALIGN_CENTER );
-lv_obj_set_style_img_recolor(ui_SteamScreen_goButton, lv_color_hex(0xFAFAFA), LV_PART_MAIN| LV_STATE_DEFAULT);
-lv_obj_set_style_img_recolor_opa(ui_SteamScreen_goButton, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
+ui_object_set_themeable_style_property(ui_SteamScreen_goButton, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR, _ui_theme_color_NiceWhite);
+ui_object_set_themeable_style_property(ui_SteamScreen_goButton, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR_OPA, _ui_theme_alpha_NiceWhite);
 
 ui_SteamScreen_downTempButton = lv_imgbtn_create(ui_SteamScreen_contentPanel5);
 lv_imgbtn_set_src(ui_SteamScreen_downTempButton, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_980971367, NULL);
@@ -121,8 +121,8 @@ lv_obj_set_height( ui_SteamScreen_downTempButton, 40);
 lv_obj_set_x( ui_SteamScreen_downTempButton, 0 );
 lv_obj_set_y( ui_SteamScreen_downTempButton, 40 );
 lv_obj_set_align( ui_SteamScreen_downTempButton, LV_ALIGN_CENTER );
-lv_obj_set_style_img_recolor(ui_SteamScreen_downTempButton, lv_color_hex(0xFAFAFA), LV_PART_MAIN| LV_STATE_DEFAULT);
-lv_obj_set_style_img_recolor_opa(ui_SteamScreen_downTempButton, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
+ui_object_set_themeable_style_property(ui_SteamScreen_downTempButton, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR, _ui_theme_color_NiceWhite);
+ui_object_set_themeable_style_property(ui_SteamScreen_downTempButton, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR_OPA, _ui_theme_alpha_NiceWhite);
 
 ui_SteamScreen_upTempButton = lv_imgbtn_create(ui_SteamScreen_contentPanel5);
 lv_imgbtn_set_src(ui_SteamScreen_upTempButton, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_1895594966, NULL);
@@ -131,8 +131,8 @@ lv_obj_set_height( ui_SteamScreen_upTempButton, 40);
 lv_obj_set_x( ui_SteamScreen_upTempButton, 0 );
 lv_obj_set_y( ui_SteamScreen_upTempButton, -40 );
 lv_obj_set_align( ui_SteamScreen_upTempButton, LV_ALIGN_CENTER );
-lv_obj_set_style_img_recolor(ui_SteamScreen_upTempButton, lv_color_hex(0xFAFAFA), LV_PART_MAIN| LV_STATE_DEFAULT);
-lv_obj_set_style_img_recolor_opa(ui_SteamScreen_upTempButton, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
+ui_object_set_themeable_style_property(ui_SteamScreen_upTempButton, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR, _ui_theme_color_NiceWhite);
+ui_object_set_themeable_style_property(ui_SteamScreen_upTempButton, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR_OPA, _ui_theme_alpha_NiceWhite);
 
 ui_SteamScreen_targetTemp = lv_label_create(ui_SteamScreen_contentPanel5);
 lv_obj_set_width( ui_SteamScreen_targetTemp, 60);

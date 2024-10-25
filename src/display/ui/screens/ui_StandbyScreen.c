@@ -9,8 +9,8 @@ void ui_StandbyScreen_screen_init(void)
 {
 ui_StandbyScreen = lv_obj_create(NULL);
 lv_obj_clear_flag( ui_StandbyScreen, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
-lv_obj_set_style_bg_color(ui_StandbyScreen, lv_color_hex(0x131313), LV_PART_MAIN | LV_STATE_DEFAULT );
-lv_obj_set_style_bg_opa(ui_StandbyScreen, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
+ui_object_set_themeable_style_property(ui_StandbyScreen, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_BG_COLOR, _ui_theme_color_Dark);
+ui_object_set_themeable_style_property(ui_StandbyScreen, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_BG_OPA, _ui_theme_alpha_Dark);
 
 ui_StandbyScreen_Image1 = lv_img_create(ui_StandbyScreen);
 lv_img_set_src(ui_StandbyScreen_Image1, &ui_img_1640786209);
@@ -20,8 +20,8 @@ lv_obj_set_align( ui_StandbyScreen_Image1, LV_ALIGN_CENTER );
 lv_obj_add_flag( ui_StandbyScreen_Image1, LV_OBJ_FLAG_ADV_HITTEST );   /// Flags
 lv_obj_clear_flag( ui_StandbyScreen_Image1, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
 lv_img_set_zoom(ui_StandbyScreen_Image1,180);
-lv_obj_set_style_img_recolor(ui_StandbyScreen_Image1, lv_color_hex(0xFAFAFA), LV_PART_MAIN| LV_STATE_DEFAULT);
-lv_obj_set_style_img_recolor_opa(ui_StandbyScreen_Image1, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
+ui_object_set_themeable_style_property(ui_StandbyScreen_Image1, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR, _ui_theme_color_NiceWhite);
+ui_object_set_themeable_style_property(ui_StandbyScreen_Image1, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_IMG_RECOLOR_OPA, _ui_theme_alpha_NiceWhite);
 
 ui_StandbyScreen_text1 = lv_label_create(ui_StandbyScreen);
 lv_obj_set_width( ui_StandbyScreen_text1, LV_SIZE_CONTENT);  /// 1
@@ -30,9 +30,21 @@ lv_obj_set_x( ui_StandbyScreen_text1, 0 );
 lv_obj_set_y( ui_StandbyScreen_text1, 150 );
 lv_obj_set_align( ui_StandbyScreen_text1, LV_ALIGN_CENTER );
 lv_label_set_text(ui_StandbyScreen_text1,"Touch Screen to wake");
-lv_obj_set_style_text_color(ui_StandbyScreen_text1, lv_color_hex(0xFAFAFA), LV_PART_MAIN | LV_STATE_DEFAULT );
-lv_obj_set_style_text_opa(ui_StandbyScreen_text1, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
+ui_object_set_themeable_style_property(ui_StandbyScreen_text1, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_TEXT_COLOR, _ui_theme_color_NiceWhite);
+ui_object_set_themeable_style_property(ui_StandbyScreen_text1, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_TEXT_OPA, _ui_theme_alpha_NiceWhite);
 lv_obj_set_style_text_font(ui_StandbyScreen_text1, &lv_font_montserrat_20, LV_PART_MAIN| LV_STATE_DEFAULT);
+
+ui_StandbyScreen_time = lv_label_create(ui_StandbyScreen);
+lv_obj_set_width( ui_StandbyScreen_time, LV_SIZE_CONTENT);  /// 1
+lv_obj_set_height( ui_StandbyScreen_time, LV_SIZE_CONTENT);   /// 1
+lv_obj_set_x( ui_StandbyScreen_time, 0 );
+lv_obj_set_y( ui_StandbyScreen_time, -150 );
+lv_obj_set_align( ui_StandbyScreen_time, LV_ALIGN_CENTER );
+lv_label_set_text(ui_StandbyScreen_time,"0:00");
+ui_object_set_themeable_style_property(ui_StandbyScreen_time, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_TEXT_COLOR, _ui_theme_color_NiceWhite);
+ui_object_set_themeable_style_property(ui_StandbyScreen_time, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_TEXT_OPA, _ui_theme_alpha_NiceWhite);
+lv_obj_set_style_text_align(ui_StandbyScreen_time, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN| LV_STATE_DEFAULT);
+lv_obj_set_style_text_font(ui_StandbyScreen_time, &lv_font_montserrat_34, LV_PART_MAIN| LV_STATE_DEFAULT);
 
 lv_obj_add_event_cb(ui_StandbyScreen, ui_event_StandbyScreen, LV_EVENT_ALL, NULL);
 

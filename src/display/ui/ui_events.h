@@ -10,6 +10,7 @@
 extern "C" {
 #endif
 
+void onLoadStarted(lv_event_t * e);
 void onBrewScreen(lv_event_t * e);
 void onWaterScreen(lv_event_t * e);
 void onSteamScreen(lv_event_t * e);

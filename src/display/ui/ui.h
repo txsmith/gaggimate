@@ -164,6 +164,7 @@ void ui_event_StandbyScreen( lv_event_t * e);
 extern lv_obj_t *ui_StandbyScreen;
 extern lv_obj_t *ui_StandbyScreen_Image1;
 extern lv_obj_t *ui_StandbyScreen_text1;
+extern lv_obj_t *ui_StandbyScreen_time;
 extern lv_obj_t *ui____initial_actions0;
 
 LV_IMG_DECLARE( ui_img_1640786209);   // assets/gaggia-logo.png

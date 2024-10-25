@@ -74,14 +74,14 @@ void onBrewScreen(lv_event_t * e)
 
 void onWaterScreen(lv_event_t * e)
 {
-  setMode(MODE_WATER);
   deactivate();
+  setMode(MODE_WATER);
 }
 
 void onSteamScreen(lv_event_t * e)
 {
-  setMode(MODE_STEAM);
   deactivate();
+  setMode(MODE_STEAM);
 }
 
 void onWaterToggle(lv_event_t * e)
@@ -91,8 +91,8 @@ void onWaterToggle(lv_event_t * e)
 
 void onWakeup(lv_event_t * e)
 {
-  setMode(MODE_BREW);
   deactivate();
+  setMode(MODE_BREW);
 }
 
 void onWaterTempLower(lv_event_t * e)
@@ -103,4 +103,9 @@ void onWaterTempLower(lv_event_t * e)
 void onWaterTempRaise(lv_event_t * e)
 {
   setTargetWaterTemp(targetWaterTemp + 1);
+}
+
+void onLoadStarted(lv_event_t * e)
+{
+  setupAfterScreen();
 }

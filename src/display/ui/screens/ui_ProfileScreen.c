@@ -9,8 +9,8 @@ void ui_ProfileScreen_screen_init(void)
 {
 ui_ProfileScreen = lv_obj_create(NULL);
 lv_obj_clear_flag( ui_ProfileScreen, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
-lv_obj_set_style_bg_color(ui_ProfileScreen, lv_color_hex(0x131313), LV_PART_MAIN | LV_STATE_DEFAULT );
-lv_obj_set_style_bg_opa(ui_ProfileScreen, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
+ui_object_set_themeable_style_property(ui_ProfileScreen, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_BG_COLOR, _ui_theme_color_Dark);
+ui_object_set_themeable_style_property(ui_ProfileScreen, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_BG_OPA, _ui_theme_alpha_Dark);
 
 ui_ProfileScreen_tempGauge = lv_arc_create(ui_ProfileScreen);
 lv_obj_set_width( ui_ProfileScreen_tempGauge, 440);

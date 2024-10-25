@@ -150,11 +150,11 @@ void control_heater(int out) {
 void control_pump(bool state) {
     if (state) {
         // Turn on the pump
-        digitalWrite(PUMP_PIN, HIGH);
+        digitalWrite(PUMP_PIN, LOW);
         printf("Setting pump relay to ON\n");
     } else {
         // Turn off the pump
-        digitalWrite(PUMP_PIN, LOW);
+        digitalWrite(PUMP_PIN, HIGH);
         printf("Setting pump relay to OFF\n");
     }
 }
@@ -162,11 +162,11 @@ void control_pump(bool state) {
 void control_valve(bool state) {
     if (state) {
         // Turn on the valve
-        digitalWrite(VALVE_PIN, HIGH);
+        digitalWrite(VALVE_PIN, LOW);
         printf("Setting valve relay to ON\n");
     } else {
         // Turn off the valve
-        digitalWrite(VALVE_PIN, LOW);
+        digitalWrite(VALVE_PIN, HIGH);
         printf("Setting valve relay to OFF\n");
     }
 }

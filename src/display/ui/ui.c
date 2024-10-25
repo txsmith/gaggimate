@@ -160,6 +160,7 @@ void ui_event_StandbyScreen( lv_event_t * e);
 lv_obj_t *ui_StandbyScreen;
 lv_obj_t *ui_StandbyScreen_Image1;
 lv_obj_t *ui_StandbyScreen_text1;
+lv_obj_t *ui_StandbyScreen_time;
 lv_obj_t *ui____initial_actions0;
 const lv_img_dsc_t *ui_imgset_257442185[1] = {&ui_img_2106667244};
 const lv_img_dsc_t *ui_imgset_1543159247[1] = {&ui_img_2056842146};
@@ -179,7 +180,7 @@ const lv_img_dsc_t *ui_imgset_1856043536[1] = {&ui_img_2100879889};
 void ui_event_InitScreen( lv_event_t * e) {
     lv_event_code_t event_code = lv_event_get_code(e);lv_obj_t * target = lv_event_get_target(e);
 if ( event_code == LV_EVENT_SCREEN_LOADED) {
-      _ui_screen_change( &ui_BrewScreen, LV_SCR_LOAD_ANIM_FADE_ON, 250, 2000, &ui_BrewScreen_screen_init);
+      onLoadStarted( e );
 }
 }
 void ui_event_ProfileScreen( lv_event_t * e) {

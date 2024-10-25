@@ -16,7 +16,6 @@
 #define BREW_MIN_DURATION_MS            5000
 #define BREW_MAX_DURATION_MS          120000
 #define STANDBY_TIMEOUT_MS            900000
-#define TEMP_OFFSET                        7
 
 #define MODE_STANDBY 0
 #define MODE_BREW    1
@@ -24,7 +23,9 @@
 #define MODE_WATER   3
 
 #define MDNS_NAME "gaggia"
+#define NTP_SERVER "pool.ntp.org"
 
+void setupAfterScreen();
 bool isActive();
 void activate(unsigned long until);
 void deactivate();
