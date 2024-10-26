@@ -24,8 +24,9 @@
 #define ERROR_CODE_RUNAWAY 4
 #define ERROR_CODE_TIMEOUT 5
 
+
+typedef std::function<void (float temperature)> temp_read_callback_t;
 typedef void (*temp_control_callback_t)(float setpoint);
-typedef void (*temp_read_callback_t)(float temperature);
 typedef void (*pin_control_callback_t)(bool isActive);
 typedef void (*ping_callback_t)();
 typedef void (*remote_err_callback_t)(int errorCode);

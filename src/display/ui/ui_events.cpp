@@ -7,110 +7,105 @@
 #include "ui.h"
 #include "../main.h"
 
-extern int targetBrewTemp;
-extern int targetSteamTemp;
-extern int targetWaterTemp;
-extern int targetDuration;
-extern int mode;
 
 void onBrewCancel(lv_event_t * e)
 {
-  deactivate();
+  controller.deactivate();
 }
 
 void onBrewStart(lv_event_t * e)
 {
-  activate(millis() + targetDuration);
+  controller.activate(millis() + controller.getTargetDuration());
 }
 
 void onBrewTempLower(lv_event_t * e)
 {
-  setTargetBrewTemp(targetBrewTemp - 1);
+  controller.lowerTemp();
 }
 
 void onBrewTempRaise(lv_event_t * e)
 {
-  setTargetBrewTemp(targetBrewTemp + 1);
+  controller.raiseTemp();
 }
 
 void onBrewTimeLower(lv_event_t * e)
 {
-  int newDuration = targetDuration - 1000;
+  int newDuration = controller.getTargetDuration() - 1000;
   if (newDuration < BREW_MIN_DURATION_MS) {
     newDuration = BREW_MIN_DURATION_MS;
   }
-  setTargetDuration(newDuration);
+  controller.setTargetDuration(newDuration);
 }
 
 void onBrewTimeRaise(lv_event_t * e)
 {
-  int newDuration = targetDuration + 1000;
+  int newDuration = controller.getTargetDuration() + 1000;
   if (newDuration > BREW_MAX_DURATION_MS) {
     newDuration = BREW_MIN_DURATION_MS;
   }
-  setTargetDuration(newDuration);
+  controller.setTargetDuration(newDuration);
 }
 
 void onSteamToggle(lv_event_t * e)
 {
-  isActive() ? deactivate() : activate(millis() + STEAM_SAFETY_DURATION_MS);
+  controller.isActive() ? controller.deactivate() : controller.activate(millis() + STEAM_SAFETY_DURATION_MS);
 }
 
 void onSteamTempLower(lv_event_t * e)
 {
-  setTargetSteamTemp(targetSteamTemp - 1);
+  controller.lowerTemp();
 }
 
 void onSteamTempRaise(lv_event_t * e)
 {
-  setTargetSteamTemp(targetSteamTemp + 1);
+  controller.raiseTemp();
 }
 
 void onBrewScreen(lv_event_t * e)
 {
-  deactivate();
-  setMode(MODE_BREW);
+  controller.deactivate();
+  controller.setMode(MODE_BREW);
 }
 
 void onWaterScreen(lv_event_t * e)
 {
-  setMode(MODE_WATER);
-  deactivate();
+  controller.setMode(MODE_WATER);
+  controller.deactivate();
 }
 
 void onSteamScreen(lv_event_t * e)
 {
-  setMode(MODE_STEAM);
-  deactivate();
+  controller.setMode(MODE_STEAM);
+  controller.deactivate();
 }
 
 void onWaterToggle(lv_event_t * e)
 {
-  isActive() ? deactivate() : activate(millis() + HOT_WATER_SAFETY_DURATION_MS);
+  controller.isActive() ? controller.deactivate() : controller.activate(millis() + HOT_WATER_SAFETY_DURATION_MS);
 }
 
 void onWakeup(lv_event_t * e)
 {
-  deactivate();
-  setMode(MODE_BREW);
+  controller.deactivate();
+  controller.setMode(MODE_BREW);
 }
 
 void onWaterTempLower(lv_event_t * e)
 {
-  setTargetWaterTemp(targetWaterTemp - 1);
+  controller.lowerTemp();
 }
 
 void onWaterTempRaise(lv_event_t * e)
 {
-  setTargetWaterTemp(targetWaterTemp + 1);
+  controller.raiseTemp();
 }
 
 void onLoadStarted(lv_event_t * e)
 {
-  setupAfterScreen();
+  controller.connect();
 }
 
 void onStandby(lv_event_t * e)
 {
-  activateStandby();
+  controller.activateStandby();
 }
