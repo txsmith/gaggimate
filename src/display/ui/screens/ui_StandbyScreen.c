@@ -13,13 +13,13 @@ ui_object_set_themeable_style_property(ui_StandbyScreen, LV_PART_MAIN| LV_STATE_
 ui_object_set_themeable_style_property(ui_StandbyScreen, LV_PART_MAIN| LV_STATE_DEFAULT, LV_STYLE_BG_OPA, _ui_theme_alpha_Dark);
 
 ui_StandbyScreen_Image1 = lv_img_create(ui_StandbyScreen);
-lv_img_set_src(ui_StandbyScreen_Image1, &ui_img_1595653719);
+lv_img_set_src(ui_StandbyScreen_Image1, &ui_img_gaggimate_png);
 lv_obj_set_width( ui_StandbyScreen_Image1, LV_SIZE_CONTENT);  /// 1
 lv_obj_set_height( ui_StandbyScreen_Image1, LV_SIZE_CONTENT);   /// 1
 lv_obj_set_align( ui_StandbyScreen_Image1, LV_ALIGN_CENTER );
 lv_obj_add_flag( ui_StandbyScreen_Image1, LV_OBJ_FLAG_ADV_HITTEST );   /// Flags
 lv_obj_clear_flag( ui_StandbyScreen_Image1, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
-lv_img_set_zoom(ui_StandbyScreen_Image1,120);
+lv_img_set_zoom(ui_StandbyScreen_Image1,210);
 
 ui_StandbyScreen_text1 = lv_label_create(ui_StandbyScreen);
 lv_obj_set_width( ui_StandbyScreen_text1, LV_SIZE_CONTENT);  /// 1

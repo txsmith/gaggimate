@@ -15,7 +15,7 @@ void onBrewCancel(lv_event_t * e)
 
 void onBrewStart(lv_event_t * e)
 {
-  controller.activate(millis() + controller.getTargetDuration());
+  controller.activate();
 }
 
 void onBrewTempLower(lv_event_t * e)
@@ -48,7 +48,7 @@ void onBrewTimeRaise(lv_event_t * e)
 
 void onSteamToggle(lv_event_t * e)
 {
-  controller.isActive() ? controller.deactivate() : controller.activate(millis() + STEAM_SAFETY_DURATION_MS);
+  controller.isActive() ? controller.deactivate() : controller.activate();
 }
 
 void onSteamTempLower(lv_event_t * e)
@@ -81,7 +81,7 @@ void onSteamScreen(lv_event_t * e)
 
 void onWaterToggle(lv_event_t * e)
 {
-  controller.isActive() ? controller.deactivate() : controller.activate(millis() + HOT_WATER_SAFETY_DURATION_MS);
+  controller.isActive() ? controller.deactivate() : controller.activate();
 }
 
 void onWakeup(lv_event_t * e)

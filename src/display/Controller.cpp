@@ -7,7 +7,6 @@ Controller::Controller()
 
 void Controller::setup() {
     mode = BREW_ON_START ? MODE_BREW : MODE_STANDBY;
-
     setupPanel();
 }
 
@@ -133,7 +132,10 @@ void Controller::setTargetTemp(int temperature) {
 
 int Controller::getTargetDuration() { return targetDuration; }
 
-void Controller::setTargetDuration(int duration) { targetDuration = duration; }
+void Controller::setTargetDuration(int duration) {
+    targetDuration = duration;
+    updateUiSettings();
+}
 
 void Controller::raiseTemp() {
     int temp = getTargetTemp();
@@ -228,9 +230,21 @@ void Controller::updateStandby() {
     }
 }
 
-void Controller::activate(unsigned long until) {
-    if (!isActive())
-        activeUntil = until;
+void Controller::activate() {
+    if (isActive()) return;
+    unsigned long duration = 0;
+    switch (mode) {
+    case MODE_BREW:
+        duration = targetDuration;
+        break;
+    case MODE_STEAM:
+        duration = STEAM_SAFETY_DURATION_MS;
+        break;
+    case MODE_WATER:
+        targetWaterTemp = HOT_WATER_SAFETY_DURATION_MS;
+        break;
+    }
+    activeUntil = millis() + duration;
     updateUiActive();
     updateRelay();
     updateLastAction();

@@ -39,25 +39,28 @@
 class Controller {
 public:
     Controller();
+
+    // Base methods called from sketch
     void setup();
     void connect();
     void loop();  // Called in loop, encapsulating most of the functionality
-    bool isUpdating() const;
 
+    // Getters and setters
     int getMode();
     void setMode(int newMode);
     int getTargetTemp();
     void setTargetTemp(int temperature);
     int getTargetDuration();
     void setTargetDuration(int duration);
+    bool isActive() const;
+    bool isUpdating() const;
+
+    // Event callback methods
+    void updateLastAction();
     void raiseTemp();
     void lowerTemp();
-    void updateLastAction();
-
-    bool isActive() const;
-    void activate(unsigned long until);
+    void activate();
     void deactivate();
-
     void activateStandby();
 
 private:
