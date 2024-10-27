@@ -241,7 +241,7 @@ void Controller::activate() {
         duration = STEAM_SAFETY_DURATION_MS;
         break;
     case MODE_WATER:
-        targetWaterTemp = HOT_WATER_SAFETY_DURATION_MS;
+        duration = HOT_WATER_SAFETY_DURATION_MS;
         break;
     }
     activeUntil = millis() + duration;
