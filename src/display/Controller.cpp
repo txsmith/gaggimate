@@ -3,8 +3,7 @@
 Controller::Controller()
     : server(80), timer(nullptr), mode(MODE_BREW), targetBrewTemp(90), targetSteamTemp(145), targetWaterTemp(80),
       targetDuration(25000), currentTemp(0), activeUntil(0), lastPing(0), lastProgress(0), lastAction(0), loaded(false),
-      updating(false), pumpOnDuration(500), pumpCycleInterval(2000) {}
-
+      updating(false) {}
 
 void Controller::setup() {
     mode = BREW_ON_START ? MODE_BREW : MODE_STANDBY;
@@ -86,13 +85,10 @@ void Controller::loop() {
     }
 
     if (now - lastProgress > PROGRESS_INTERVAL) {
-        if (mode == MODE_BREW) {
+        if (mode == MODE_BREW)
             updateBrewProgress();
-        } else if (mode == MODE_STEAM) {
-            updateSteamProgress();
-        } else if (mode == MODE_STANDBY) {
+        else if (mode == MODE_STANDBY)
             updateStandby();
-        }
         clientController.sendTemperatureControl(getTargetTemp());
         updateRelay();
         lastProgress = now;
@@ -153,31 +149,18 @@ void Controller::lowerTemp() {
 
 void Controller::updateRelay() {
     bool active = isActive();
-    unsigned long now = millis();
+    int pumpValue = 0;
 
-    // For BREW and WATER modes, the pump is always active when `active` is true.
-    bool pump = (active && (mode == MODE_BREW || mode == MODE_WATER));
-    
-    // For STEAM mode, the valve is active, and the pump cycles based on pumpOnDuration and pumpCycleInterval.
-    if (mode == MODE_STEAM && active) {
-        if (now - steamPumpLastActivated >= pumpCycleInterval) {
-            // Every pumpCycleInterval, toggle pump to on
-            steamPumpOn = true;
-            steamPumpLastActivated = now;  // Update last activation time
-        } else if (now - steamPumpLastActivated >= pumpOnDuration) {
-            // After pumpOnDuration, turn off the pump if it was activated
-            steamPumpOn = false;
+    // Set pump value based on the mode
+    if (active) {
+        if (mode == MODE_BREW || mode == MODE_WATER) {
+            pumpValue = 100;
+        } else if (mode == MODE_STEAM) {
+            pumpValue = 4;
         }
-    } else {
-        steamPumpOn = false; // Ensure pump is off if not in steam mode
     }
 
-    // Set the actual pump and valve values based on the current mode and active state
-    pump = pump || steamPumpOn; // Keep pump on if any condition in steam mode is met
-    
-    bool valve = (active && (mode == MODE_BREW || mode == MODE_STEAM));
-
-    clientController.sendPumpControl(pump);
+    clientController.sendPumpControl(pumpValue);
     clientController.sendValveControl(valve);
 }
 
@@ -244,23 +227,6 @@ void Controller::updateBrewProgress() {
                           seconds);
 }
 
-void Controller::updateSteamProgress() {
-    // I dont know if this makes sense or not, but until i can test it, i will leave it.
-    unsigned long now = millis();
-    unsigned long progress = now - (activeUntil - targetDuration);
-    double secondsDouble = targetDuration / 1000.0;
-    int minutes = (int)(secondsDouble / 60.0 - 0.5);
-    int seconds = (int)secondsDouble % 60;
-    double progressSecondsDouble = progress / 1000.0;
-    int progressMinutes = (int)(progressSecondsDouble / 60.0 - 0.5);
-    int progressSeconds = (int)progressSecondsDouble % 60;
-
-    lv_bar_set_range(ui_StatusScreen_progressBar, 0, (int)secondsDouble);
-    lv_bar_set_value(ui_StatusScreen_progressBar, progress / 1000, LV_ANIM_OFF);
-    lv_label_set_text_fmt(ui_StatusScreen_progressLabel, "%2d:%02d / %2d:%02d", progressMinutes, progressSeconds, minutes,
-                          seconds);
-}
-
 void Controller::updateStandby() {
     struct tm timeinfo;
     if (getLocalTime(&timeinfo)) {
@@ -290,18 +256,6 @@ void Controller::activateStandby() {
     deactivate();
     _ui_screen_change(&ui_StandbyScreen, LV_SCR_LOAD_ANIM_NONE, 500, 0, &ui_StandbyScreen_screen_init);
 }
-
-void Controller::activate(unsigned long until) {
-    if (!isActive())
-        activeUntil = until;
-    updateUiActive();
-    updateRelay();
-    updateLastAction();
-    if (mode == MODE_STEAM) {
-        _ui_screen_change(&ui_SteamScreen, LV_SCR_LOAD_ANIM_NONE, 500, 0, &ui_SteamScreen_screen_init);
-    }
-}
-
 
 bool Controller::isActive() const { return activeUntil > millis(); }
 
