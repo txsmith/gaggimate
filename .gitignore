@@ -1,1 +1,4 @@
 .pio
+env/
+pcb/Gaggimate-backups
+pcb/jlcpcb
