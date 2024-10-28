@@ -4,7 +4,8 @@
 #define WIFI_SSID "TBD"
 #define WIFI_PASS "TBD"
 
-#define TIMEZONE "CEST-1CET,M3.2.0/2:00:00,M11.1.0/2:00:00"
+// Check https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv for valid zones
+#define TIMEZONE "CET-1CEST,M3.5.0,M10.5.0/3"
 
 #define TEMP_OFFSET   7
 #define BREW_ON_START 0
