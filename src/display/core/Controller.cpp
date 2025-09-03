@@ -623,10 +623,17 @@ void Controller::onVolumetricMeasurement(double measurement, VolumetricMeasureme
     if (source == VolumetricMeasurementSource::BLUETOOTH) {
         lastBluetoothMeasurement = millis();
     }
+
+#ifdef NIGHTLY_BUILD
     if (source == VolumetricMeasurementSource::FLOW_ESTIMATION && isBluetoothScaleHealthy()) {
         ESP_LOGD(LOG_TAG, "Ignoring flow estimation, bluetooth scale available (%lums ago)", timeSinceLastBluetooth);
         return;
     }
+#else
+    if (source == VolumetricMeasurementSource::FLOW_ESTIMATION) {
+        return;
+    }
+#endif
     if (currentProcess != nullptr) {
         currentProcess->updateVolume(measurement);
     }
@@ -634,6 +641,7 @@ void Controller::onVolumetricMeasurement(double measurement, VolumetricMeasureme
         lastProcess->updateVolume(measurement);
     }
 }
+
 bool Controller::isBluetoothScaleHealthy() const {
     unsigned long timeSinceLastBluetooth = millis() - lastBluetoothMeasurement;
     return (timeSinceLastBluetooth < BLUETOOTH_GRACE_PERIOD_MS) || volumetricOverride;
