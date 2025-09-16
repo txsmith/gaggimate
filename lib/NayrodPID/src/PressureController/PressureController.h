@@ -25,11 +25,11 @@ class PressureController {
     void update(ControlMode mode);
     void tare();
     void reset();
-
+ 
     float getCoffeeOutputEstimate() { return std::fmax(0.0f, _coffeeOutput); };
     void setPumpFlowCoeff(float oneBarFlow, float nineBarFlow);
     void setPumpFlowPolyCoeffs(float a, float b, float c, float d);
-    float getPumpFlowRate() { return _pumpFlowRate; };
+    float getPumpFlowRate() { return exportPumpFlowRate; };
     float getCoffeeFlowRate() { return *_valveStatus == 1 ? _coffeeFlowRate : 0.0f; };
     float getPuckResistance() { return _puckResistance; }
 
@@ -92,13 +92,15 @@ class PressureController {
     float _coffeeFlowRate = 0.0f;      // Coffee output flow rate (mL/s)
     float _lastFilteredPressure = 0.0f; // Previous filtered pressure for derivative calculation
     float _filterEstimatorFrequency = 1.0f; // Filter frequency for estimator
+    float _pressureFilterEstimator = 0.0f;
     float _puckSaturationVolume = 0.0f;// Total volume to saturate the puck(ml)
-    float _puckSaturatedVolume = 38.0f; // Volume at puck saturation (ml)
-    float _lastPuckResistance = 0.0f; // Previous puck resistance for derivative calculation
-    float _puckResistanceDerivative = 0.0f; // Derivative of puck resistance
-    bool _coffeStartedToFlow  = false;
-    float _missedDops = 0.0f; // Coffee volume first drip compensation
-
+    float _puckSaturatedVolume = 45.0f; // Volume at puck saturation (ml)
+    float _lastPuckConductance = 0.0f; // Previous puck resistance for derivative calculation
+    float _puckConductance = 0.0f;
+    float _puckConductanceDerivative = 0.0f; // Derivative of puck resistance
+    bool _puckState[3] = {};
+    int _puckCounter  = 0;
+    float exportPumpFlowRate = 0.0f; // To disociate the exported value from the internal because of filtering (cosmetic) purpose
     SimpleKalmanFilter *_pressureKalmanFilter;
 };
 
