@@ -2,9 +2,7 @@
 #include "SimpleKalmanFilter/SimpleKalmanFilter.h"
 #include <algorithm>
 #include <math.h>
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
+
 // Helper function to return the sign of a float
 inline float sign(float x) { return (x > 0.0f) - (x < 0.0f); }
 
