@@ -17,6 +17,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <version.h>
 static std::unordered_map<uint32_t, std::string> rxBuffers;
 static WebUIPlugin* g_webUIPlugin = nullptr;
 
