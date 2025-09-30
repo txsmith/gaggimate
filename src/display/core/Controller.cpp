@@ -513,7 +513,8 @@ void Controller::activate() {
     clientController.tare();
     if (isVolumetricAvailable()) {
 #ifdef NIGHTLY_BUILD
-        currentVolumetricSource = isBluetoothScaleHealthy() ? VolumetricMeasurementSource::BLUETOOTH : VolumetricMeasurementSource::FLOW_ESTIMATION;
+        currentVolumetricSource =
+            isBluetoothScaleHealthy() ? VolumetricMeasurementSource::BLUETOOTH : VolumetricMeasurementSource::FLOW_ESTIMATION;
 #else
         currentVolumetricSource = VolumetricMeasurementSource::BLUETOOTH;
 #endif
