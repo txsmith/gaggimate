@@ -155,6 +155,7 @@ void WebUIPlugin::setupServer() {
     server.on("/api/scales/connect", [this](AsyncWebServerRequest *request) { handleBLEScaleConnect(request); });
     server.on("/api/scales/scan", [this](AsyncWebServerRequest *request) { handleBLEScaleScan(request); });
     server.on("/api/scales/info", [this](AsyncWebServerRequest *request) { handleBLEScaleInfo(request); });
+    server.serveStatic("/history/", SPIFFS, "/h/").setCacheControl("no-store");
     server.on("/api/core-dump", HTTP_GET, [this](AsyncWebServerRequest *request) { handleCoreDumpDownload(request); });
     server.onNotFound([](AsyncWebServerRequest *request) { request->send(SPIFFS, "/w/index.html"); });
     server.serveStatic("/", SPIFFS, "/w").setDefaultFile("index.html").setCacheControl("max-age=0");
@@ -570,6 +571,19 @@ void WebUIPlugin::updateOTAStatus(const String &version) {
     doc["latestVersion"] = ota->getCurrentVersion();
     doc["channel"] = settings.getOTAChannel();
     doc["updating"] = updating;
+    // SPIFFS usage metrics
+    {
+        size_t total = SPIFFS.totalBytes();
+        size_t used = SPIFFS.usedBytes();
+        size_t freeBytes = total > used ? (total - used) : 0;
+        doc["spiffsTotal"] = static_cast<uint32_t>(total);
+        doc["spiffsUsed"] = static_cast<uint32_t>(used);
+        doc["spiffsFree"] = static_cast<uint32_t>(freeBytes);
+        if (total > 0) {
+            // Provide integer percentage to avoid float JSON
+            doc["spiffsUsedPct"] = static_cast<uint8_t>((used * 100) / total);
+        }
+    }
     ws.textAll(doc.as<String>());
 }
 
