@@ -5,7 +5,7 @@
 
 const HEADER_SIZE = 128;
 const SAMPLE_SIZE = 24; // 12 packed 16-bit values
-const MAGIC = 0x544F4853; // 'SHOT'
+const MAGIC = 0x544f4853; // 'SHOT'
 
 const TEMP_SCALE = 10;
 const PRESSURE_SCALE = 10;
@@ -53,7 +53,9 @@ export function parseBinaryShot(arrayBuffer, id) {
   const fullSampleBytes = Math.floor(dataBytes / SAMPLE_SIZE) * SAMPLE_SIZE;
   const trailingBytes = dataBytes - fullSampleBytes;
   const inferredSamples = fullSampleBytes / SAMPLE_SIZE;
-  const maxSamples = sampleCountHeader ? Math.min(sampleCountHeader, inferredSamples) : inferredSamples;
+  const maxSamples = sampleCountHeader
+    ? Math.min(sampleCountHeader, inferredSamples)
+    : inferredSamples;
   for (let i = 0; i < maxSamples; i++) {
     const base = headerSize + i * SAMPLE_SIZE;
     const tick = view.getUint16(base + 0, true);
@@ -74,7 +76,8 @@ export function parseBinaryShot(arrayBuffer, id) {
 
   const lastT = samples.length ? samples[samples.length - 1].t : 0;
   const headerIncomplete = sampleCountHeader === 0;
-  const inferredIncomplete = trailingBytes !== 0 || (sampleCountHeader && sampleCountHeader > inferredSamples);
+  const inferredIncomplete =
+    trailingBytes !== 0 || (sampleCountHeader && sampleCountHeader > inferredSamples);
   const incomplete = headerIncomplete || inferredIncomplete;
   const effectiveDuration = !incomplete && durationHeader ? durationHeader : lastT;
 

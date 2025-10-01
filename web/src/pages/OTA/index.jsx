@@ -4,13 +4,15 @@ import { ApiServiceContext } from '../../services/ApiService.js';
 import Card from '../../components/Card.jsx';
 import { downloadJson } from '../../utils/download.js';
 
-const imageUrlToBase64 = async (blob) => {
+const imageUrlToBase64 = async blob => {
   return new Promise((onSuccess, onError) => {
     try {
-      const reader = new FileReader() ;
-      reader.onload = function(){ onSuccess(this.result) } ;
+      const reader = new FileReader();
+      reader.onload = function () {
+        onSuccess(this.result);
+      };
       reader.readAsDataURL(blob);
-    } catch(e) {
+    } catch (e) {
       onError(e);
     }
   });
@@ -23,19 +25,19 @@ export function OTA() {
   const [formData, setFormData] = useState({});
   const [phase, setPhase] = useState(0);
   const [progress, setProgress] = useState(0);
-  
-  const downloadSupportData = useCallback(async() => {
+
+  const downloadSupportData = useCallback(async () => {
     const settingsResponse = await fetch(`/api/settings`);
     const data = await settingsResponse.json();
     delete data.wifiPassword;
     delete data.haPassword;
     const coredumpBlob = await fetch(`/api/core-dump`).then(r => r.blob());
     let coredump = await imageUrlToBase64(coredumpBlob);
-    coredump = coredump.substring(coredump.indexOf("base64,") + 7);
+    coredump = coredump.substring(coredump.indexOf('base64,') + 7);
     const supportFile = {
       settings: data,
       versions: formData,
-      coredump
+      coredump,
     };
     const ts = Date.now();
     downloadJson(supportFile, `support-${ts}.dat`);
@@ -175,14 +177,15 @@ export function OTA() {
               <div className='flex flex-col space-y-2'>
                 <label className='text-sm font-medium'>Storage (SPIFFS)</label>
                 <div className='flex flex-col gap-1'>
-                  <div className='w-full h-3 rounded bg-base-300 overflow-hidden'>
+                  <div className='bg-base-300 h-3 w-full overflow-hidden rounded'>
                     <div
-                      className='h-full bg-primary transition-all'
+                      className='bg-primary h-full transition-all'
                       style={{ width: `${formData.spiffsUsedPct || 0}%` }}
                     />
                   </div>
                   <div className='text-xs opacity-75'>
-                    {((formData.spiffsUsed || 0) / 1024).toFixed(1)} KB / {(formData.spiffsTotal / 1024).toFixed(1)} KB ({formData.spiffsUsedPct}%)
+                    {((formData.spiffsUsed || 0) / 1024).toFixed(1)} KB /{' '}
+                    {(formData.spiffsTotal / 1024).toFixed(1)} KB ({formData.spiffsUsedPct}%)
                   </div>
                 </div>
               </div>
@@ -220,11 +223,7 @@ export function OTA() {
             >
               Update Controller
             </button>
-            <button
-              type='button'
-              className='btn btn-outline'
-              onClick={downloadSupportData}
-            >
+            <button type='button' className='btn btn-outline' onClick={downloadSupportData}>
               Download Support Data
             </button>
           </div>

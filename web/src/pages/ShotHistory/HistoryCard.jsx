@@ -69,14 +69,19 @@ export default function HistoryCard({ shot, onDelete, onLoad }) {
               {shot.profile} - {date.toLocaleString()}
             </span>
             {shot.incomplete && (
-              <span className='ml-2 shrink-0 rounded bg-warning/20 px-2 py-1 text-xs font-semibold text-warning border border-warning/40'>INCOMPLETE</span>
+              <span className='bg-warning/20 text-warning border-warning/40 ml-2 shrink-0 rounded border px-2 py-1 text-xs font-semibold'>
+                INCOMPLETE
+              </span>
             )}
             <div className='flex flex-row justify-end gap-2'>
-              <div className='tooltip tooltip-left' data-tip={shot.loaded ? 'Export' : 'Load first'}>
+              <div
+                className='tooltip tooltip-left'
+                data-tip={shot.loaded ? 'Export' : 'Load first'}
+              >
                 <button
                   disabled={!shot.loaded}
                   onClick={() => onExport()}
-                  className='group text-info disabled:opacity-40 hover:bg-info/10 active:border-info/20 inline-block items-center justify-between gap-2 rounded-md border border-transparent px-2.5 py-2 text-sm font-semibold'
+                  className='group text-info hover:bg-info/10 active:border-info/20 inline-block items-center justify-between gap-2 rounded-md border border-transparent px-2.5 py-2 text-sm font-semibold disabled:opacity-40'
                   aria-label='Export shot data'
                 >
                   <FontAwesomeIcon icon={faFileExport} />

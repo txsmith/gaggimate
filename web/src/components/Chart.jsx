@@ -49,21 +49,21 @@ export function ChartComponent({ data, className, chartClassName }) {
   useEffect(() => {
     if (!chart) return;
 
-  // Generic "get or create" helper for nested option objects.
-  const ensure = (obj, key, def) => {
+    // Generic "get or create" helper for nested option objects.
+    const ensure = (obj, key, def) => {
       if (!obj[key]) obj[key] = def;
       return obj[key];
     };
 
-  // Walk a path (array of keys) under chart.options creating objects.
-  // Guarantees a font object exists so we can safely assign size.
-  const ensureFont = path => {
+    // Walk a path (array of keys) under chart.options creating objects.
+    // Guarantees a font object exists so we can safely assign size.
+    const ensureFont = path => {
       const target = path.reduce((acc, key) => ensure(acc, key, {}), chart.options);
       if (!target.font) target.font = {}; // for scale tick objects that may embed font deeper
       return target;
     };
 
-  const handleResize = () => {
+    const handleResize = () => {
       const isSmallScreen = window.innerWidth < 640;
 
       // Update legend font size

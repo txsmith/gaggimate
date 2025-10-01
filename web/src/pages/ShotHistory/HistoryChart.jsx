@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { Chart } from 'chart.js';
 import { ChartComponent } from '../../components/Chart.jsx';
 
 function getChartData(data) {
@@ -21,6 +21,10 @@ function getChartData(data) {
     pf.push({ x, y: s.pf });
     tf.push({ x, y: s.tf });
   }
+  const tempValues = ct.map(i => i.y).concat(tt.map(i => i.y));
+  const minTemp = Math.floor(Math.min(...tempValues));
+  const maxTemp = Math.ceil(Math.max(...tempValues));
+  const padding = maxTemp - minTemp > 10 ? 2 : 5;
   return {
     type: 'line',
     data: {
@@ -95,10 +99,10 @@ function getChartData(data) {
             font: {
               size: window.innerWidth < 640 ? 10 : 12,
             },
-            generateLabels: function(chart) {
+            generateLabels: function (chart) {
               const original = Chart.defaults.plugins.legend.labels.generateLabels;
               const labels = original.call(this, chart);
-              
+
               labels.forEach((label, index) => {
                 const dataset = chart.data.datasets[index];
                 label.lineWidth = 3;
@@ -106,7 +110,7 @@ function getChartData(data) {
                   label.lineDash = dataset.borderDash;
                 }
               });
-              
+
               return labels;
             },
           },
@@ -125,11 +129,13 @@ function getChartData(data) {
         y: {
           type: 'linear',
           ticks: {
-            callback: value => `${value} °C`,
-            font: { 
+            callback: value => `${value.toFixed()} °C`,
+            font: {
               size: window.innerWidth < 640 ? 10 : 12,
             },
           },
+          min: Math.max(minTemp - padding, 0),
+          max: maxTemp + padding,
         },
         y1: {
           type: 'linear',
@@ -137,7 +143,7 @@ function getChartData(data) {
           max: 16,
           position: 'right',
           ticks: {
-            callback: value => `${value} bar / g/s`,
+            callback: value => `${value.toFixed()} bar / g/s`,
             font: {
               size: window.innerWidth < 640 ? 10 : 12,
             },
