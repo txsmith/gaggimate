@@ -22,8 +22,11 @@ function getChartData(data) {
     tf.push({ x, y: s.tf });
   }
   const tempValues = ct.map(i => i.y).concat(tt.map(i => i.y));
+  const timeValues = ct.map(i => i.x);
   const minTemp = Math.floor(Math.min(...tempValues));
   const maxTemp = Math.ceil(Math.max(...tempValues));
+  const minX = Math.min(...timeValues);
+  const maxX = Math.max(...timeValues);
   const padding = maxTemp - minTemp > 10 ? 2 : 5;
   return {
     type: 'line',
@@ -85,6 +88,7 @@ function getChartData(data) {
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       parsing: false, // We already provide x/y objects
       spanGaps: true,
       plugins: {
@@ -122,6 +126,8 @@ function getChartData(data) {
       animation: false,
       scales: {
         x: {
+          min: minX,
+          max: maxX,
           type: 'linear',
           title: { display: true, text: 'Time (s)' },
           ticks: { font: { size: window.innerWidth < 640 ? 10 : 12 } },
@@ -158,5 +164,11 @@ function getChartData(data) {
 export function HistoryChart({ shot }) {
   const chartData = getChartData(shot.samples);
 
-  return <ChartComponent className='' chartClassName='w-full' data={chartData} />;
+  return (
+    <ChartComponent
+      className='min-h-[350px] flex-1'
+      chartClassName='w-full min-h-[350px]'
+      data={chartData}
+    />
+  );
 }
