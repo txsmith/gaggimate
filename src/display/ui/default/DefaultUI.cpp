@@ -545,7 +545,7 @@ void DefaultUI::setupReactive() {
                               if (mode == MODE_STEAM) {
                                   _ui_flag_modify(ui_SimpleProcessScreen_goButton, LV_OBJ_FLAG_HIDDEN, active);
                                   lv_imgbtn_set_src(ui_SimpleProcessScreen_goButton, LV_IMGBTN_STATE_RELEASED, nullptr,
-                                                    &ui_img_691326438, nullptr);
+                                                    &ui_img_1456692430, nullptr);
                               } else {
                                   lv_imgbtn_set_src(ui_SimpleProcessScreen_goButton, LV_IMGBTN_STATE_RELEASED, nullptr,
                                                     active ? &ui_img_1456692430 : &ui_img_445946954, nullptr);
@@ -611,7 +611,9 @@ void DefaultUI::handleScreenChange() {
         }
 
         _ui_screen_change(targetScreen, LV_SCR_LOAD_ANIM_NONE, 0, 0, targetScreenInit);
-        _ui_screen_delete(&current);
+        if (current != nullptr) {
+            lv_obj_del(current);
+        }
         rerender = true;
     }
 }
