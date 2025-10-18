@@ -1,0 +1,22 @@
+CompileFlags:
+  # Remove GCC-specific flags that clang doesn't understand
+  Remove:
+    - -mlongcalls
+    - -fstrict-volatile-bitfields
+    - -fno-tree-switch-conversion
+    - -mtext-section-literals
+    - -ffunction-sections
+    - -fdata-sections
+    - -Wl,--gc-sections
+
+  # Add clang-compatible equivalents
+  Add:
+    - -Wno-unknown-pragmas
+    - -Wno-unused-command-line-argument
+
+Diagnostics:
+  Suppress:
+    - non-pod-varargs
+
+Index:
+  Background: Build
