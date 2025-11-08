@@ -69,8 +69,14 @@ export default function VisualizerUploadModal({
   if (!isOpen) return null;
 
   return (
-    <div className='bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4'>
-      <div className='max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg bg-white shadow-xl dark:bg-gray-800'>
+    <div
+      className='backdrop-blur-sm bg-black/50 fixed inset-0 z-50 flex items-center justify-center p-4'
+      onClick={handleClose}
+    >
+      <div
+        className='max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg bg-white shadow-xl dark:bg-base-100'
+        onClick={e => e.stopPropagation()}
+      >
         <div className='p-6'>
           <div className='mb-4 flex items-center justify-between'>
             <h3 className='text-lg font-semibold'>Upload to Visualizer.coffee</h3>
@@ -85,20 +91,24 @@ export default function VisualizerUploadModal({
           </div>
 
           {shotInfo && (
-            <div className='mb-4 rounded-md bg-gray-100 p-3 dark:bg-gray-700'>
-              <p className='text-sm text-gray-600 dark:text-gray-300'>
-                <strong>Shot:</strong> {shotInfo.profile}
-              </p>
-              <p className='text-sm text-gray-600 dark:text-gray-300'>
-                <strong>Date:</strong> {new Date(shotInfo.timestamp * 1000).toLocaleString()}
-              </p>
-              <p className='text-sm text-gray-600 dark:text-gray-300'>
-                <strong>Duration:</strong> {(shotInfo.duration / 1000).toFixed(1)}s
-              </p>
+            <div className='mb-4 rounded-md'>
+              <div className='flex justify-between text-sm'>
+                <strong>Shot:</strong>
+                <span>{shotInfo.profile}</span>
+              </div>
+              <div className='flex justify-between text-sm'>
+                <strong>Date:</strong>
+                <span>{new Date(shotInfo.timestamp * 1000).toLocaleString()}</span>
+              </div>
+              <div className='flex justify-between text-sm'>
+                <strong>Duration:</strong>
+                <span>{(shotInfo.duration / 1000).toFixed(1)}s</span>
+              </div>
               {shotInfo.volume > 0 && (
-                <p className='text-sm text-gray-600 dark:text-gray-300'>
-                  <strong>Yield:</strong> {shotInfo.volume}g
-                </p>
+                <div className='flex justify-between text-sm'>
+                  <strong>Yield:</strong>
+                  <span>{shotInfo.volume}g</span>
+                </div>
               )}
             </div>
           )}
@@ -115,7 +125,7 @@ export default function VisualizerUploadModal({
                 value={username}
                 onChange={e => setUsername(e.target.value)}
                 disabled={isUploading}
-                className='w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-white'
+                className='input input-bordered w-full'
                 placeholder='Enter your username'
                 autoComplete='username'
                 required
@@ -134,7 +144,7 @@ export default function VisualizerUploadModal({
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   disabled={isUploading}
-                  className='w-full rounded-md border border-gray-300 px-3 py-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-white'
+                  className='input input-bordered w-full'
                   placeholder='Enter your password'
                   autoComplete='current-password'
                   required
@@ -157,9 +167,9 @@ export default function VisualizerUploadModal({
                 checked={rememberCredentials}
                 onChange={e => setRememberCredentials(e.target.checked)}
                 disabled={isUploading}
-                className='h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 disabled:opacity-50'
+                className='toggle toggle-primary'
               />
-              <label htmlFor='remember' className='ml-2 text-sm text-gray-600 dark:text-gray-300'>
+              <label htmlFor='remember' className='ml-2 text-sm'>
                 Remember username
               </label>
             </div>
@@ -169,14 +179,14 @@ export default function VisualizerUploadModal({
                 type='button'
                 onClick={handleClose}
                 disabled={isUploading}
-                className='rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 disabled:opacity-50 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500'
+                className='btn btn-outline'
               >
                 Cancel
               </button>
               <button
                 type='submit'
                 disabled={isUploading || !username.trim() || !password.trim()}
-                className='flex items-center space-x-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50'
+                className='btn btn-primary'
               >
                 {isUploading && <FontAwesomeIcon icon={faSpinner} spin />}
                 <span>{isUploading ? 'Uploading...' : 'Upload Shot'}</span>
@@ -184,7 +194,7 @@ export default function VisualizerUploadModal({
             </div>
           </form>
 
-          <div className='mt-4 text-xs text-gray-500 dark:text-gray-400'>
+          <div className='mt-4 text-xs text-base-content/60'>
             <p>
               Your credentials are only used for this upload and will be stored locally only if you
               choose to remember your username.
