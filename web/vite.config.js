@@ -9,11 +9,11 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://4.4.4.1/',
+        target: 'http://gaggimate.local/',
         changeOrigin: true,
       },
       '/ws': {
-        target: 'ws://4.4.4.1',
+        target: 'ws://gaggimate.local',
         ws: true,
       },
     },
