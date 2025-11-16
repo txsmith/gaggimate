@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback, useContext } from 'preact/hooks';
 import { Spinner } from '../../components/Spinner.jsx';
-import { ApiServiceContext } from '../../services/ApiService.js';
+import { ApiServiceContext, machine } from '../../services/ApiService.js';
 import Card from '../../components/Card.jsx';
 import { downloadJson } from '../../utils/download.js';
+import DebugLogs from '../../components/DebugLogs.jsx';
 
 const imageUrlToBase64 = async blob => {
   return new Promise((onSuccess, onError) => {
@@ -25,6 +26,7 @@ export function OTA() {
   const [formData, setFormData] = useState({});
   const [phase, setPhase] = useState(0);
   const [progress, setProgress] = useState(0);
+  const hasRequestedOtaSettings = useRef(false);
 
   const downloadSupportData = useCallback(async () => {
     const settingsResponse = await fetch(`/api/settings`);
@@ -62,10 +64,12 @@ export function OTA() {
     };
   }, [apiService]);
   useEffect(() => {
-    setTimeout(() => {
+    // Wait for WebSocket to be connected before requesting OTA settings
+    if (machine.value.connected && !hasRequestedOtaSettings.current) {
+      hasRequestedOtaSettings.current = true;
       apiService.send({ tp: 'req:ota-settings' });
-    }, 500);
-  }, [apiService]);
+    }
+  }, [apiService, machine.value.connected]);
 
   const formRef = useRef();
 
@@ -87,14 +91,6 @@ export function OTA() {
     },
     [apiService],
   );
-
-  if (isLoading) {
-    return (
-      <div className='flex w-full flex-row items-center justify-center py-16'>
-        <Spinner size={8} />
-      </div>
-    );
-  }
 
   if (phase > 0) {
     return (
@@ -128,6 +124,12 @@ export function OTA() {
       <form key='ota' method='post' action='/api/ota' ref={formRef} onSubmit={onSubmit}>
         <div className='grid grid-cols-1 gap-4 lg:grid-cols-12'>
           <Card sm={12} title='System Information'>
+            {isLoading ? (
+              <div className='flex w-full flex-row items-center justify-center py-16'>
+                <Spinner size={8} />
+              </div>
+            ) : (
+              <>
             <div className='flex flex-col space-y-4'>
               <label htmlFor='channel' className='text-sm font-medium'>
                 Update Channel
@@ -142,109 +144,117 @@ export function OTA() {
               </select>
             </div>
 
-            <div className='flex flex-col space-y-4'>
-              <label className='text-sm font-medium'>Hardware</label>
-              <div className='input input-bordered bg-base-200 cursor-default break-words whitespace-normal'>
-                {formData.hardware}
-              </div>
-            </div>
-
-            <div className='flex flex-col space-y-4'>
-              <label className='text-sm font-medium'>Controller version</label>
-              <div className='input input-bordered bg-base-200 cursor-default break-words whitespace-normal'>
-                <span className='break-all'>{formData.controllerVersion}</span>
-                {formData.controllerUpdateAvailable && (
-                  <span className='text-primary font-bold break-all'>
-                    (Update available: {formData.latestVersion})
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div className='flex flex-col space-y-4'>
-              <label className='text-sm font-medium'>Display version</label>
-              <div className='input input-bordered bg-base-200 cursor-default break-words whitespace-normal'>
-                <span className='break-all'>{formData.displayVersion}</span>
-                {formData.displayUpdateAvailable && (
-                  <span className='text-primary font-bold break-all'>
-                    (Update available: {formData.latestVersion})
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {formData.spiffsTotal !== undefined && (
-              <div className='flex flex-col space-y-2'>
-                <label className='text-sm font-medium'>Storage (SPIFFS)</label>
-                <div className='flex flex-col gap-1'>
-                  <div className='bg-base-300 h-3 w-full overflow-hidden rounded'>
-                    <div
-                      className='bg-primary h-full transition-all'
-                      style={{ width: `${formData.spiffsUsedPct || 0}%` }}
-                    />
-                  </div>
-                  <div className='text-xs opacity-75'>
-                    {((formData.spiffsUsed || 0) / 1024).toFixed(1)} KB /{' '}
-                    {(formData.spiffsTotal / 1024).toFixed(1)} KB ({formData.spiffsUsedPct}%)
-                  </div>
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mt-4'>
+              <div className='flex flex-col space-y-2 min-w-0'>
+                <label className='text-sm font-medium'>Hardware</label>
+                <div className='input input-bordered bg-base-200 cursor-default break-words whitespace-normal h-auto min-h-12 w-full'>
+                  {formData.hardware}
                 </div>
               </div>
-            )}
 
-            {formData.sdTotal !== undefined && (
-              <div className='flex flex-col space-y-2'>
-                <label className='text-sm font-medium'>Storage (SD-Card)</label>
-                <div className='flex flex-col gap-1'>
-                  <div className='bg-base-300 h-3 w-full overflow-hidden rounded'>
-                    <div
-                      className='bg-primary h-full transition-all'
-                      style={{ width: `${formData.sdUsedPct || 0}%` }}
-                    />
-                  </div>
-                  <div className='text-xs opacity-75'>
-                    {((formData.sdUsed || 0) / 1024 / 1024).toFixed(1)} MB /{' '}
-                    {(formData.sdTotal / 1024 / 1024).toFixed(1)} MB ({formData.sdUsedPct}%)
-                  </div>
+              <div className='flex flex-col space-y-2 min-w-0'>
+                <label className='text-sm font-medium'>Controller version</label>
+                <div className='input input-bordered bg-base-200 cursor-default break-words whitespace-normal h-auto min-h-12 w-full'>
+                  <span className='break-all'>{formData.controllerVersion}</span>
+                  {formData.controllerUpdateAvailable && (
+                    <span className='text-primary font-bold break-all'>
+                      {' '}(Update available: {formData.latestVersion})
+                    </span>
+                  )}
                 </div>
               </div>
-            )}
 
-            <div className='alert alert-warning'>
+              <div className='flex flex-col space-y-2 min-w-0'>
+                <label className='text-sm font-medium'>Display version</label>
+                <div className='input input-bordered bg-base-200 cursor-default break-words whitespace-normal h-auto min-h-12 w-full'>
+                  <span className='break-all'>{formData.displayVersion}</span>
+                  {formData.displayUpdateAvailable && (
+                    <span className='text-primary font-bold break-all'>
+                      {' '}(Update available: {formData.latestVersion})
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-4'>
+              {formData.spiffsTotal !== undefined && (
+                <div className='flex flex-col space-y-2 min-w-0'>
+                  <label className='text-sm font-medium'>Storage (SPIFFS)</label>
+                  <div className='flex flex-col gap-1'>
+                    <div className='bg-base-300 h-3 w-full overflow-hidden rounded'>
+                      <div
+                        className='bg-primary h-full transition-all'
+                        style={{ width: `${formData.spiffsUsedPct || 0}%` }}
+                      />
+                    </div>
+                    <div className='text-xs opacity-75'>
+                      {((formData.spiffsUsed || 0) / 1024).toFixed(1)} KB /{' '}
+                      {(formData.spiffsTotal / 1024).toFixed(1)} KB ({formData.spiffsUsedPct}%)
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {formData.sdTotal !== undefined && (
+                <div className='flex flex-col space-y-2 min-w-0'>
+                  <label className='text-sm font-medium'>Storage (SD-Card)</label>
+                  <div className='flex flex-col gap-1'>
+                    <div className='bg-base-300 h-3 w-full overflow-hidden rounded'>
+                      <div
+                        className='bg-primary h-full transition-all'
+                        style={{ width: `${formData.sdUsedPct || 0}%` }}
+                      />
+                    </div>
+                    <div className='text-xs opacity-75'>
+                      {((formData.sdUsed || 0) / 1024 / 1024).toFixed(1)} MB /{' '}
+                      {(formData.sdTotal / 1024 / 1024).toFixed(1)} MB ({formData.sdUsedPct}%)
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className='alert alert-warning mt-2'>
               <span>
                 Make sure to backup your profiles from the profile screen before updating the
                 display.
               </span>
             </div>
-          </Card>
-        </div>
 
-        <div className='pt-4 lg:col-span-12'>
-          <div className='flex flex-col flex-wrap gap-2 sm:flex-row'>
-            <button type='submit' className='btn btn-primary' disabled={submitting}>
-              Save & Refresh
-            </button>
-            <button
-              type='submit'
-              name='update'
-              className='btn btn-secondary'
-              disabled={!formData.displayUpdateAvailable || submitting}
-              onClick={() => onUpdate('display')}
-            >
-              Update Display
-            </button>
-            <button
-              type='submit'
-              name='update'
-              className='btn btn-accent'
-              disabled={!formData.controllerUpdateAvailable || submitting}
-              onClick={() => onUpdate('controller')}
-            >
-              Update Controller
-            </button>
-            <button type='button' className='btn btn-outline' onClick={downloadSupportData}>
-              Download Support Data
-            </button>
-          </div>
+            <div className='flex flex-col flex-wrap gap-2 sm:flex-row mt-2'>
+              <button type='submit' className='btn btn-primary' disabled={submitting}>
+                Save & Refresh
+              </button>
+              <button
+                type='submit'
+                name='update'
+                className='btn btn-secondary'
+                disabled={!formData.displayUpdateAvailable || submitting}
+                onClick={() => onUpdate('display')}
+              >
+                Update Display
+              </button>
+              <button
+                type='submit'
+                name='update'
+                className='btn btn-accent'
+                disabled={!formData.controllerUpdateAvailable || submitting}
+                onClick={() => onUpdate('controller')}
+              >
+                Update Controller
+              </button>
+              <button type='button' className='btn btn-outline' onClick={downloadSupportData}>
+                Download Support Data
+              </button>
+            </div>
+              </>
+            )}
+          </Card>
+
+          <Card sm={12} title='Debug Logs'>
+            <DebugLogs />
+          </Card>
         </div>
       </form>
     </>
