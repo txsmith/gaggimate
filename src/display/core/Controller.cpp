@@ -551,6 +551,16 @@ void Controller::activate() {
 #endif
         if (mode == MODE_BREW) {
             pluginManager->trigger("controller:brew:prestart");
+
+            // Wait for BLE scale to complete taring if we're using bluetooth volumetric source
+            if (currentVolumetricSource == VolumetricMeasurementSource::BLUETOOTH) {
+                const unsigned long TARE_TIMEOUT_MS = 3000;
+                const float TARE_TOLERANCE_G = 0.5f;
+
+                if (!waitForScaleTare(TARE_TIMEOUT_MS, TARE_TOLERANCE_G)) {
+                    return;
+                }
+            }
         }
     }
     delay(200);
@@ -675,6 +685,7 @@ void Controller::onVolumetricMeasurement(double measurement, VolumetricMeasureme
                            "value", static_cast<float>(measurement));
     if (source == VolumetricMeasurementSource::BLUETOOTH) {
         lastBluetoothMeasurement = millis();
+        lastVolumetricMeasurementValue = measurement;
     }
 
     if (currentVolumetricSource != source) {
@@ -692,6 +703,31 @@ void Controller::onVolumetricMeasurement(double measurement, VolumetricMeasureme
 bool Controller::isBluetoothScaleHealthy() const {
     unsigned long timeSinceLastBluetooth = millis() - lastBluetoothMeasurement;
     return (timeSinceLastBluetooth < BLUETOOTH_GRACE_PERIOD_MS) || volumetricOverride;
+}
+
+bool Controller::waitForScaleTare(unsigned long timeoutMs, float tolerance) {
+    unsigned long startTime = millis();
+    const unsigned long pollIntervalMs = 50;
+
+    ESP_LOGD(LOG_TAG, "Waiting for scale to tare (timeout: %lums, tolerance: ±%.2fg)", timeoutMs, tolerance);
+
+    while (millis() - startTime < timeoutMs) {
+        if (!isBluetoothScaleHealthy()) {
+            ESP_LOGW(LOG_TAG, "Scale connection unhealthy, tare failed");
+            return false;
+        }
+
+        double currentWeight = lastVolumetricMeasurementValue;
+        if (currentWeight >= -tolerance && currentWeight <= tolerance) {
+            ESP_LOGI(LOG_TAG, "Scale tared successfully (%.2fg) after %lums", currentWeight, millis() - startTime);
+            return true;
+        }
+
+        delay(pollIntervalMs);
+    }
+
+    ESP_LOGW(LOG_TAG, "Scale tare timeout after %lums", timeoutMs);
+    return false;
 }
 
 void Controller::onFlush() {
