@@ -355,8 +355,9 @@ void WebUIPlugin::handleOTASettings(uint32_t clientId, JsonDocument &request) {
             ota->setReleaseUrl(RELEASE_URL + (controller->getSettings().getOTAChannel() == "latest" ? "latest" : "tag/nightly"));
             lastUpdateCheck = 0;
         }
+    } else {
+        updateOTAStatus("Checking...");
     }
-    updateOTAStatus("Checking...");
 }
 
 void WebUIPlugin::handleOTAStart(uint32_t clientId, JsonDocument &request) {
