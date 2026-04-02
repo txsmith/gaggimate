@@ -106,6 +106,7 @@ void Controller::connect() {
     if (initialized)
         return;
     lastPing = millis();
+    connectStartTime = millis();
     pluginManager->trigger("controller:startup");
 
     setupWifi();
@@ -136,6 +137,13 @@ void Controller::setupPanel() {
 
 void Controller::setupBluetooth() {
     clientController.initClient();
+    clientController.registerDisconnectCallback([this]() {
+        if (initialized) {
+            pluginManager->trigger("controller:bluetooth:disconnect");
+            waitingForController = true;
+            setMode(MODE_STANDBY);
+        }
+    });
     clientController.registerSensorCallback(
         [this](const float temp, const float pressure, const float puckFlow, const float pumpFlow, const float puckResistance) {
             onTempRead(temp);
@@ -202,10 +210,10 @@ void Controller::setupWifi() {
     if (settings.getWifiSsid() != "" && settings.getWifiPassword() != "") {
         WiFi.setHostname(settings.getMdnsName().c_str());
         WiFi.mode(WIFI_STA);
+        WiFi.setAutoReconnect(true);
         WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
         WiFi.begin(settings.getWifiSsid(), settings.getWifiPassword());
         WiFi.setTxPower(WIFI_POWER_19_5dBm);
-        WiFi.setAutoReconnect(true);
         for (int attempts = 0; attempts < WIFI_CONNECT_ATTEMPTS; attempts++) {
             if (WiFi.status() == WL_CONNECTED) {
                 break;
@@ -221,7 +229,8 @@ void Controller::setupWifi() {
                          WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
             WiFi.onEvent(
                 [this](WiFiEvent_t, WiFiEventInfo_t info) {
-                    ESP_LOGI(LOG_TAG, "Lost WiFi connection. Reason: %d", info.wifi_sta_disconnected.reason);
+                    ESP_LOGI(LOG_TAG, "Lost WiFi connection. Reason: %s",
+                             WiFi.disconnectReasonName(static_cast<wifi_err_reason_t>(info.wifi_sta_disconnected.reason)));
                     pluginManager->trigger("controller:wifi:disconnect");
                 },
                 WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
@@ -259,31 +268,32 @@ void Controller::loop() {
         connect();
     }
 
-    if (clientController.isReadyForConnection()) {
-        clientController.connectToServer();
+    unsigned long now = millis();
+
+    // If BLE scanning has been running for a while without finding the controller,
+    // notify the UI so it can update the startup label accordingly.
+    if (!waitingForController && initialized && !clientController.isConnected() &&
+        (now - connectStartTime) > CONTROLLER_WAITING_TIMEOUT_MS) {
+        waitingForController = true;
+        pluginManager->trigger("controller:bluetooth:waiting");
+    }
+
+    if (clientController.isReadyForConnection() && clientController.connectToServer()) {
+        waitingForController = false;
         setupInfos();
-        pluginManager->trigger("controller:bluetooth:connect");
+        ESP_LOGI(LOG_TAG, "setting pressure scale to %.2f\n", settings.getPressureScaling());
+        setPressureScale();
+        clientController.sendPidSettings(settings.getPid());
+        clientController.sendPumpModelCoeffs(settings.getPumpModelCoeffs());
         if (!loaded) {
             loaded = true;
             if (settings.getStartupMode() == MODE_STANDBY)
                 activateStandby();
 
-            ESP_LOGI(LOG_TAG, "setting pressure scale to %.2f\n", settings.getPressureScaling());
-            setPressureScale();
-            clientController.sendPidSettings(settings.getPid());
-            clientController.sendPumpModelCoeffs(settings.getPumpModelCoeffs());
-
             pluginManager->trigger("controller:ready");
         }
+        pluginManager->trigger("controller:bluetooth:connect");
     }
-
-    unsigned long now = millis();
-
-    // Disable ping as we send output control frequently
-    // if (now - lastPing > PING_INTERVAL) {
-    //     lastPing = now;
-    //     clientController.sendPing();
-    // }
 
     if (isErrorState()) {
         return;
@@ -319,12 +329,18 @@ void Controller::loop() {
             if (lastProcess->getType() == MODE_BREW) {
                 if (auto *brewProcess = static_cast<BrewProcess *>(lastProcess);
                     brewProcess->target == ProcessTarget::VOLUMETRIC) {
-                    settings.setBrewDelay(brewProcess->getNewDelayTime());
+                    double newDelay = brewProcess->getNewDelayTime();
+                    if (newDelay >= 0) {
+                        settings.setBrewDelay(newDelay);
+                    }
                 }
             } else if (lastProcess->getType() == MODE_GRIND) {
                 if (auto *grindProcess = static_cast<GrindProcess *>(lastProcess);
                     grindProcess->target == ProcessTarget::VOLUMETRIC) {
-                    settings.setGrindDelay(grindProcess->getNewDelayTime());
+                    double newDelay = grindProcess->getNewDelayTime();
+                    if (newDelay >= 0) {
+                        settings.setGrindDelay(newDelay);
+                    }
                 }
             }
         }
@@ -333,7 +349,7 @@ void Controller::loop() {
 
     if (grindActiveUntil != 0 && now > grindActiveUntil)
         deactivateGrind();
-    if (mode != MODE_STANDBY && now > lastAction + settings.getStandbyTimeout())
+    if (mode != MODE_STANDBY && settings.getStandbyTimeout() > 0 && now > lastAction + settings.getStandbyTimeout())
         activateStandby();
 }
 
@@ -370,8 +386,10 @@ void Controller::autotune(int testTime, int samples) {
 }
 
 void Controller::startProcess(Process *process) {
-    if (isActive() || !isReady())
+    if (isActive() || !isReady()) {
+        delete process;
         return;
+    }
     processCompleted = false;
     this->currentProcess = process;
     pluginManager->trigger("controller:process:start");
@@ -379,11 +397,12 @@ void Controller::startProcess(Process *process) {
 }
 
 float Controller::getTargetTemp() const {
+    Process *proc = currentProcess;
     switch (mode) {
     case MODE_BREW:
     case MODE_GRIND:
-        if (isActive() && currentProcess != nullptr && currentProcess->getType() == MODE_BREW) {
-            auto brewProcess = static_cast<BrewProcess *>(currentProcess);
+        if (proc != nullptr && proc->isActive() && proc->getType() == MODE_BREW) {
+            auto brewProcess = static_cast<BrewProcess *>(proc);
             return brewProcess->getTemperature();
         }
         return profileManager->getSelectedProfile().temperature;
@@ -453,7 +472,7 @@ void Controller::lowerTemp() {
 }
 
 void Controller::raiseBrewTarget() {
-    if (settings.isVolumetricTarget() && isVolumetricAvailable()) {
+    if (isVolumetricAvailable() && profileManager->getSelectedProfile().isVolumetric()) {
         profileManager->getSelectedProfile().adjustVolumetricTarget(1);
     } else {
         profileManager->getSelectedProfile().adjustDuration(1);
@@ -462,7 +481,7 @@ void Controller::raiseBrewTarget() {
 }
 
 void Controller::lowerBrewTarget() {
-    if (settings.isVolumetricTarget() && isVolumetricAvailable()) {
+    if (isVolumetricAvailable() && profileManager->getSelectedProfile().isVolumetric()) {
         profileManager->getSelectedProfile().adjustVolumetricTarget(-1);
     } else {
         profileManager->getSelectedProfile().adjustDuration(-1);
@@ -503,29 +522,32 @@ void Controller::lowerGrindTarget() {
 }
 
 void Controller::updateControl() {
+    // Local capture to avoid race condition with deactivate() running on another core
+    Process *proc = currentProcess;
+    bool active = isActive();
+
     float targetTemp = getTargetTemp();
     if (targetTemp > .0f) {
         targetTemp = targetTemp + static_cast<float>(settings.getTemperatureOffset());
     }
 
-    // Check if alt relay should be active based on process type and alt relay function setting
     bool altRelayActive = false;
-    if (isActive() && currentProcess->isAltRelayActive()) {
-        if (currentProcess->getType() == MODE_GRIND && settings.getAltRelayFunction() == ALT_RELAY_GRIND) {
+    if (active && proc->isAltRelayActive()) {
+        if (proc->getType() == MODE_GRIND && settings.getAltRelayFunction() == ALT_RELAY_GRIND) {
             altRelayActive = true;
         }
     }
 
     clientController.sendAltControl(altRelayActive);
-    if (isActive() && systemInfo.capabilities.pressure) {
-        if (currentProcess->getType() == MODE_STEAM) {
+    if (active && systemInfo.capabilities.pressure) {
+        if (proc->getType() == MODE_STEAM) {
             targetPressure = settings.getSteamPumpCutoff();
-            targetFlow = currentProcess->getPumpValue() * 0.1f;
+            targetFlow = proc->getPumpValue() * 0.1f;
             clientController.sendAdvancedOutputControl(false, targetTemp, false, targetPressure, targetFlow);
             return;
         }
-        if (currentProcess->getType() == MODE_BREW) {
-            auto *brewProcess = static_cast<BrewProcess *>(currentProcess);
+        if (proc->getType() == MODE_BREW) {
+            auto *brewProcess = static_cast<BrewProcess *>(proc);
             if (brewProcess->isAdvancedPump()) {
                 clientController.sendAdvancedOutputControl(brewProcess->isRelayActive(), targetTemp,
                                                            brewProcess->getPumpTarget() == PumpTarget::PUMP_TARGET_PRESSURE,
@@ -538,8 +560,7 @@ void Controller::updateControl() {
     }
     targetPressure = 0.0f;
     targetFlow = 0.0f;
-    clientController.sendOutputControl(isActive() && currentProcess->isRelayActive(),
-                                       isActive() ? currentProcess->getPumpValue() : 0, targetTemp);
+    clientController.sendOutputControl(active && proc->isRelayActive(), active ? proc->getPumpValue() : 0, targetTemp);
 }
 
 void Controller::activate() {
@@ -572,8 +593,9 @@ void Controller::activate() {
     switch (mode) {
     case MODE_BREW:
         startProcess(new BrewProcess(profileManager->getSelectedProfile(),
-                                     settings.isVolumetricTarget() && isVolumetricAvailable() ? ProcessTarget::VOLUMETRIC
-                                                                                              : ProcessTarget::TIME,
+                                     profileManager->getSelectedProfile().isVolumetric() && isVolumetricAvailable()
+                                         ? ProcessTarget::VOLUMETRIC
+                                         : ProcessTarget::TIME,
                                      settings.getBrewDelay()));
         break;
     case MODE_STEAM:
@@ -584,7 +606,7 @@ void Controller::activate() {
         break;
     default:;
     }
-    if (currentProcess->getType() == MODE_BREW) {
+    if (currentProcess != nullptr && currentProcess->getType() == MODE_BREW) {
         pluginManager->trigger("controller:brew:start");
     }
 }
@@ -644,9 +666,15 @@ void Controller::deactivateStandby() {
     setMode(MODE_BREW);
 }
 
-bool Controller::isActive() const { return currentProcess != nullptr && currentProcess->isActive(); }
+bool Controller::isActive() const {
+    Process *proc = currentProcess;
+    return proc != nullptr && proc->isActive();
+}
 
-bool Controller::isGrindActive() const { return isActive() && currentProcess->getType() == MODE_GRIND; }
+bool Controller::isGrindActive() const {
+    Process *proc = currentProcess;
+    return proc != nullptr && proc->isActive() && proc->getType() == MODE_GRIND;
+}
 
 int Controller::getMode() const { return mode; }
 
@@ -679,8 +707,8 @@ void Controller::onProfileSaveAsNew() {
     profile.label = "Copy of " + profileManager->getSelectedProfile().label;
     profile.id = generateShortID();
     settings.setSelectedProfile(profile.id);
-    settings.addFavoritedProfile(profile.id);
     profileManager->saveProfile(profileManager->getSelectedProfile());
+    profileManager->addFavoritedProfile(profile.id);
 }
 
 void Controller::onVolumetricMeasurement(double measurement, VolumetricMeasurementSource source) {
@@ -700,7 +728,7 @@ void Controller::onVolumetricMeasurement(double measurement, VolumetricMeasureme
     if (currentProcess != nullptr) {
         currentProcess->updateVolume(measurement);
     }
-    if (lastProcess != nullptr) {
+    if (lastProcess != nullptr && !lastProcess->isComplete()) {
         lastProcess->updateVolume(measurement);
     }
 }
@@ -742,6 +770,12 @@ void Controller::onFlush() {
     clear();
     startProcess(new BrewProcess(FLUSH_PROFILE, ProcessTarget::TIME, settings.getBrewDelay()));
     pluginManager->trigger("controller:brew:start");
+}
+
+void Controller::onVolumetricDelete() {
+    if (profileManager->getSelectedProfile().isVolumetric()) {
+        profileManager->getSelectedProfile().removeVolumetricTarget();
+    }
 }
 
 void Controller::handleBrewButton(int brewButtonStatus) {

@@ -31,12 +31,14 @@ import { faTrashCan } from '@fortawesome/free-solid-svg-icons/faTrashCan';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight';
 import { faFileImport } from '@fortawesome/free-solid-svg-icons/faFileImport';
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons/faEllipsisVertical';
+import { faChartSimple } from '@fortawesome/free-solid-svg-icons/faChartSimple';
 import { ConfirmButton } from '../../components/ConfirmButton.jsx';
 import { Tooltip } from '../../components/Tooltip.jsx';
 import { faTemperatureFull } from '@fortawesome/free-solid-svg-icons/faTemperatureFull';
 import { faClock } from '@fortawesome/free-solid-svg-icons/faClock';
 import { faScaleBalanced } from '@fortawesome/free-solid-svg-icons/faScaleBalanced';
 import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
+import { buildStatisticsProfileHref } from '../Statistics/utils/statisticsRoute.js';
 
 Chart.register(
   LineController,
@@ -92,6 +94,7 @@ function ProfileCard({
 
     downloadJson(download, `profile-${data.id}.json`);
   }, [data]);
+  const statsHref = buildStatisticsProfileHref({ source: 'gaggimate', profileName: data.label });
 
   // Toggle profile details
   const [detailsCollapsed, setDetailsCollapsed] = useState(true);
@@ -306,6 +309,18 @@ function ProfileCard({
                         </a>
                       </li>
                       <li role='none'>
+                        <a
+                          role='menuitem'
+                          href={statsHref}
+                          onClick={closeMenu}
+                          className='text-success justify-start'
+                          aria-label={`View statistics for ${data.label} profile`}
+                        >
+                          <FontAwesomeIcon icon={faChartSimple} />
+                          <span>Statistics</span>
+                        </a>
+                      </li>
+                      <li role='none'>
                         <button
                           role='menuitem'
                           onClick={() => {
@@ -388,6 +403,15 @@ function ProfileCard({
                       <FontAwesomeIcon icon={faPen} />
                     </a>
                   </Tooltip>
+                  <Tooltip content='View statistics for this profile'>
+                    <a
+                      href={statsHref}
+                      className='btn btn-sm btn-ghost text-success'
+                      aria-label={`View statistics for ${data.label} profile`}
+                    >
+                      <FontAwesomeIcon icon={faChartSimple} />
+                    </a>
+                  </Tooltip>
                   <Tooltip content='Export profile'>
                     <button
                       onClick={onDownload}
@@ -439,10 +463,10 @@ function ProfileCard({
                   {totalDurationSeconds}s
                 </span>
                 {data.phases.length > 0 &&
-                  data.phases.at(-1)?.targets?.at(0)?.type === 'volumetric' && (
+                  data.phases.at(-1)?.targets?.some(target => target.type === 'volumetric') && (
                     <span className='text-base-content/60 badge badge-xs md:badge-sm badge-outline'>
                       <FontAwesomeIcon icon={faScaleBalanced} />
-                      {`${data.phases.at(-1).targets.at(0).value}g`}
+                      {`${data.phases.at(-1).targets.find(target => target.type === 'volumetric').value}g`}
                     </span>
                   )}
                 {data.phases.length > 0 && (
@@ -721,9 +745,14 @@ export function ProfileList() {
       reader.onload = async e => {
         const result = e.target.result;
         if (typeof result === 'string') {
-          const profiles = parseProfile(result);
-          for (const p of profiles) {
-            await apiService.request({ tp: 'req:profiles:save', profile: p });
+          setLoading(true);
+          try {
+            const profiles = parseProfile(result);
+            for (const p of profiles) {
+              await apiService.request({ tp: 'req:profiles:save', profile: p });
+            }
+          } catch {
+            // Individual save errors are surfaced by WS timeout; continue to reload list.
           }
           await loadProfiles();
         }
@@ -733,12 +762,13 @@ export function ProfileList() {
   };
 
   const onClear = useCallback(async () => {
+    setLoading(true);
     for (const p of profiles) {
       if (!p.selected) {
         await apiService.request({ tp: 'req:profiles:delete', id: p.id });
       }
-      await loadProfiles();
     }
+    await loadProfiles();
   }, [profiles, apiService]);
 
   // Filtered profiles

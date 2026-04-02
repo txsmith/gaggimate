@@ -121,6 +121,16 @@ struct Phase {
         }
         return {false, nullptr};
     }
+
+    void removeVolumetricTarget() {
+        std::vector<Target> newTargets;
+        for (const auto &target : targets) {
+            if (target.type != TargetType::TARGET_TYPE_VOLUMETRIC) {
+                newTargets.push_back(target);
+            }
+        }
+        targets = newTargets;
+    }
 };
 
 struct Profile {
@@ -133,6 +143,15 @@ struct Profile {
     bool favorite = false;
     bool selected = false;
     std::vector<Phase> phases;
+
+    bool isVolumetric() const {
+        for (const auto &phase : phases) {
+            if (phase.hasVolumetricTarget()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     unsigned int getPhaseCount() const {
         int brew = 0;
@@ -188,6 +207,14 @@ struct Profile {
         for (auto &phase : phases) {
             if (phase.hasVolumetricTarget() && phase.phase == PhaseType::PHASE_TYPE_BREW) {
                 phase.adjustVolumetricTarget(adjustment);
+            }
+        }
+    }
+
+    void removeVolumetricTarget() {
+        for (auto &phase : phases) {
+            if (phase.hasVolumetricTarget()) {
+                phase.removeVolumetricTarget();
             }
         }
     }
